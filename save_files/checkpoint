@@ -1,0 +1,2 @@
+model_checkpoint_path: "movinghat-spread3-partopt-support"
+all_model_checkpoint_paths: "movinghat-spread3-partopt-support"
