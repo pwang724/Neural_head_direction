@@ -5,7 +5,7 @@ import matplotlib as mpl
 mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from create_hat_inputs import velocityTraining
+from inputs import model_inputs
 import time
 np.random.seed(2)
 tf.set_random_seed(2)
@@ -189,8 +189,8 @@ with tf.Session() as sess:
 
     # create training data
     ix = np.random.randint(low=0, high=STATE_SIZE, size=10 * batch)
-    data = velocityTraining(STATE_SIZE)
-    inputs, labels, vel_size = data.create_inputs(ix, timesteps=steps, spread=3, velocity_start=5)
+    data = model_inputs(STATE_SIZE)
+    inputs, labels, vel_size = data.create_inputs(ix, time_steps=steps, bump_size=3, velocity_start=5)
     # append zeros for desired full state size
     inputs = np.concatenate([inputs, np.zeros((inputs.shape[0], inputs.shape[1], support_size))], axis=2)
     save_name = "movinghat-spread3"
