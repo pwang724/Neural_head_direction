@@ -19,27 +19,22 @@ class RNN:
         time_steps = opts.time_steps
         state_size = opts.state_size
         save_path = opts.save_path
-        batch_size = opts.batch_size
         learning_rate = opts.learning_rate
 
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
         self.sess = sess
-        self.x = tf.placeholder(tf.float32, [batch_size, time_steps, state_size], name='input_placeholder')
-        self.y = tf.placeholder(tf.float32, [batch_size, time_steps, state_size], name='output_placeholder')
-
-        data = tf.data.Dataset.from_tensor_slices((self.x, self.y))
-        data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
-        self.train_iter = data.make_initializable_iterator()
-        self.next_element = self.train_iter.get_next()
+        self.batch_size = tf.placeholder(tf.int32, [], name='batch_size')
+        self.x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
+        self.y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
 
         inputs_series = tf.unstack(self.x, axis=1)
         labels_series = tf.unstack(self.y, axis=1)
         self.W_h = tf.get_variable('W_h', shape=[3, state_size, state_size])
         self.W_b = tf.get_variable('b', shape=[3, state_size], initializer=tf.constant_initializer(0.0))
 
-        init_state = tf.constant(0.0, shape=[batch_size, state_size], dtype= tf.float32)
+        init_state = tf.zeros(shape=[self.batch_size, state_size], dtype= tf.float32)
         state_series = [init_state]
         for i, current_input in enumerate(inputs_series):
             next_state = self.rnn(state_series[-1], current_input, i)
@@ -53,6 +48,13 @@ class RNN:
         self.total_loss = tf.reduce_mean(losses)
         self.train_op = tf.train.AdamOptimizer(learning_rate).minimize(self.total_loss)
         self.saver = tf.train.Saver({"W_h": self.W_h, "W_b":self.W_b})
+
+    def make_input(self, batch_size):
+        data = tf.data.Dataset.from_tensor_slices((self.x, self.y))
+        data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
+        train_iter = data.make_initializable_iterator()
+        next_element = train_iter.get_next()
+        return train_iter, next_element
 
     def gru(self, h_prev, input, name):
         #  update gate
@@ -80,12 +82,13 @@ class RNN:
         save_path = opts.save_path
         file_name = opts.file_name
 
-        sess.run(self.train_iter.initializer, feed_dict={self.x: inputs, self.y: labels})
+        train_iter, next_element = self.make_input(opts.batch_size)
+        sess.run(train_iter.initializer, feed_dict={self.x: inputs, self.y: labels})
         total_loss, logits = [], []
 
         for ep in range(n_epoch):
-            cur_inputs, cur_labels = sess.run(self.next_element)
-            feed_dict = {self.x: cur_inputs, self.y: cur_labels}
+            cur_inputs, cur_labels = sess.run(next_element)
+            feed_dict = {self.x: cur_inputs, self.y: cur_labels, self.batch_size: opts.batch_size}
             logits, cur_loss, _ = self.sess.run([self.logits, self.total_loss,
                                                self.train_op], feed_dict=feed_dict)
             if ep % 20 == 0:
@@ -100,9 +103,10 @@ class RNN:
         """Visualization of trained network."""
         save_path = opts.save_path
         file_name = opts.file_name
+        batch_size = opts.test_batch_size
         checkpoint = os.path.join('./',save_path, file_name)
         self.saver.restore(sess, checkpoint)
-        feed_dict = {self.x: inputs, self.y: labels}
+        feed_dict = {self.x: inputs, self.y: labels, self.batch_size: batch_size}
         states, predictions, total_loss = \
             self.sess.run([self.logits, self.predictions, self.total_loss], feed_dict=feed_dict)
         weights, biases = self.sess.run([self.W_h, self.W_b])
@@ -148,13 +152,14 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--epoch', type=int, default= int(1e4), help= 'number of epochs')
     parser.add_argument('--batch_size', type=int, default= 5, help= 'batch size')
-    parser.add_argument('--n_input', type=int, default= 5, help= 'number of inputs')
+    parser.add_argument('--test_batch_size', type=int, default= 7, help= 'test batch size')
+    parser.add_argument('--n_input', type=int, default= 1000, help= 'number of inputs')
     parser.add_argument('--learning_rate', type=int, default= .003, help= 'learning rate')
     parser.add_argument('--time_steps', type=int, default= 20, help= 'rnn time steps')
 
     parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
-    parser.add_argument('--bump_size', type=int, default= 5, help= 'size of bump')
-    parser.add_argument('--bump_std', type=int, default= 2, help= 'std of bump')
+    parser.add_argument('--bump_size', type=int, default= 7, help= 'size of bump')
+    parser.add_argument('--bump_std', type=int, default= 1.5, help= 'std of bump')
 
     parser.add_argument('--noise', action='store_true', default=False, help='noise boolean')
     parser.add_argument('--noise_intensity', type=float, default= .25, help= 'noise intensity')
@@ -191,7 +196,8 @@ if __name__ == '__main__':
 
         test = True
         if test:
-            rnn.run_test(X[0:7, :, :], Y[0:7, :, :], opts)
+            e = opts.test_batch_size
+            rnn.run_test(X[:e, :, :], Y[:e, :, :], opts)
             plt.show(block=False)
 
 

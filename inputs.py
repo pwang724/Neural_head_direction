@@ -1,11 +1,9 @@
 import numpy as np
 from scipy.stats import norm
-import pandas as pd
-import matplotlib as mpl
-mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
+import argparse
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -18,12 +16,25 @@ def sum_normalize(x):
         x = x / np.sum(x)
     return x
 
-def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, bump_std=1,
-                  noise=False, noise_intensity=.5, noise_density=.5,
-                  velocity=False, velocity_gap=5, velocity_start=1):
+def create_inputs(opts):
     """
     Create inputs and labels for training.
     """
+    state_size = opts.state_size
+    n_input = opts.n_input
+    time_steps = opts.time_steps
+
+    bump_size = opts.bump_size
+    bump_std = opts.bump_std
+
+    noise = opts.noise
+    noise_density = opts.noise_density
+    noise_intensity = opts.noise_intensity
+
+    velocity = opts.velocity
+    velocity_start = opts.velocity_start
+    velocity_gap = opts.velocity_gap
+
 
     def make_bumps(ix):
         assert bump_size < state_size, "bump size cannot be bigger than state size"
@@ -63,7 +74,7 @@ def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, bump_std=1,
 
     assert velocity_start < time_steps, "first velocity command occurs after last time-step"
 
-    ix = np.random.randint(low=0, high=state_size, size=n_samples)
+    ix = np.random.randint(low=0, high=state_size, size=n_input)
     input = make_bumps(ix)
     batch_size = len(ix)
 
@@ -118,13 +129,29 @@ def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, bump_std=1,
 
     return inputs, labels, vel_per_batch
 
+def arg_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n_input', type=int, default= 5, help= 'number of inputs')
+    parser.add_argument('--time_steps', type=int, default=100, help='rnn time steps')
+    parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
+
+    parser.add_argument('--bump_size', type=int, default= 5, help= 'size of bump')
+    parser.add_argument('--bump_std', type=int, default= 2, help= 'std of bump')
+
+    parser.add_argument('--noise', action='store_true', default=False, help='noise boolean')
+    parser.add_argument('--noise_intensity', type=float, default= .25, help= 'noise intensity')
+    parser.add_argument('--noise_density', type=float, default= .5, help= 'noise density')
+
+    parser.add_argument('--velocity', action='store_true', default=True, help='velocity boolean')
+    parser.add_argument('--velocity_start', type=int, default=5, help='velocity start')
+    parser.add_argument('--velocity_gap', type=int, default=5, help='velocity gap')
+    return parser
+
 
 if __name__ == '__main__':
-    STATE_SIZE = 10
-    batch = 3
-    inputs, labels, _ = create_inputs(10, state_size = 10, time_steps=50, bump_size=2,
-                                          noise= False,
-                                          velocity=True, velocity_start=4, velocity_gap = 5)
+    parser = arg_parser()
+    opts = parser.parse_args()
+    inputs, labels, _ = create_inputs(opts)
 
     print(inputs.shape)
     print(labels.shape)
