@@ -6,19 +6,20 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import time
 
 # set seed for reproducibility
-np.random.seed(2)
-tf.set_random_seed(2)
+# np.random.seed(2)
+# tf.set_random_seed(2)
 
 
 class RNN:
     """An RNN made to model 1D attractor network"""
 
-    def __init__(self, sess, time_steps, path_name, batch = 10):
-        self.x = tf.placeholder(tf.float32, [None, time_steps, STATE_SIZE], name='input_placeholder')
-        self.y = tf.placeholder(tf.float32, [None, time_steps, STATE_SIZE], name='output_placeholder')
-        self.init_state = tf.placeholder(tf.float32, [None, STATE_SIZE], name='init_state')
+    def __init__(self, sess, time_steps, path_name, learning_rate, batch = 10):
+        self.x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
+        self.y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
+        self.init_state = tf.placeholder(tf.float32, [None, state_size], name='init_state')
         self.sess = sess
         self.time_steps = time_steps
         self.path_name = path_name
@@ -30,34 +31,41 @@ class RNN:
         self.train_iter = train_dataset.make_initializable_iterator()
         self.next_element = self.train_iter.get_next()
 
+        inputs_series = tf.unstack(self.x, axis=1)
         labels_series = tf.unstack(self.y, axis=1)
-        self.W_h = tf.get_variable('W_h', shape=[3, STATE_SIZE, STATE_SIZE])
-        self.W_b = tf.get_variable('b', [STATE_SIZE], initializer=tf.constant_initializer(0.0))
+        self.W_h = tf.get_variable('W_h', shape=[3, state_size, state_size])
+        self.W_b = tf.get_variable('b', shape=[3, state_size], initializer=tf.constant_initializer(0.0))
 
-        states = tf.scan(self.rnn, tf.transpose(self.x, [1, 0, 2]), initializer=self.init_state)
-        self.state_series = tf.unstack(states, axis=0)  # output of states leaves t on zero axis
-        self.predictions = [tf.nn.softmax(logits) for logits in self.state_series]
-        # the logits are the states
-        self.losses = [tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=labels)
-                  for logits, labels in zip(self.state_series, labels_series)]
+        self.state_series = [self.init_state]
+        for i, current_input in enumerate(inputs_series):
+            next_state = self.rnn(self.state_series[-1], current_input, i)
+            self.state_series.append(next_state)
+
+        # states1 = tf.scan(self.rnn, tf.transpose(self.x, [1, 0, 2]), initializer=self.init_state)
+        # self.state_series1 = tf.unstack(states1, axis=0)  # output of states leaves t on zero axis
+        self.logits = [s for s in self.state_series]
+        self.predictions = [tf.nn.softmax(l) for l in self.logits]
+        self.losses = [tf.nn.softmax_cross_entropy_with_logits_v2(logits=l, labels=labels)
+                  for l, labels in zip(self.logits, labels_series)]
 
         self.total_loss = tf.reduce_mean(self.losses)
-        self.train_op = tf.train.RMSPropOptimizer(.001).minimize(self.total_loss)
-        self.saver = tf.train.Saver({"W_h": self.W_h})
+        self.train_op = tf.train.AdamOptimizer(learning_rate).minimize(self.total_loss)
+        self.saver = tf.train.Saver({"W_h": self.W_h, "W_b":self.W_b})
 
-    def gru(self, hprev, input):
+    def gru(self, h_prev, input, name):
         #  update gate
-        z = tf.sigmoid(input + tf.matmul(hprev, self.W_h[0]))
+        z = tf.sigmoid(input + tf.matmul(h_prev, self.W_h[0]))
         #  reset gate
-        r = tf.sigmoid(input + tf.matmul(hprev, self.W_h[1]))
+        r = tf.sigmoid(input + tf.matmul(h_prev, self.W_h[1]))
         #  intermediate
-        h = tf.tanh(input + tf.matmul((r * hprev), self.W_h[2]))
+        h = tf.tanh(input + tf.matmul((r * h_prev), self.W_h[2]), name='time_{}'.format(name))
         # new state
-        st = (1 - z) * h + (z * hprev)
+        st = (1 - z) * h + (z * h_prev)
         return st
 
-    def rnn(self, hprev, input):
-        out = tf.tanh(input + tf.matmul(hprev, self.W_h[0]))
+    def rnn(self, h_prev, input, name):
+        out = tf.tanh(self.W_b[0] + input + tf.matmul(h_prev, self.W_h[0]),
+                               name='time_{}'.format(name))
         return out
 
     def run_training(self, inputs, labels, n_epoch=1000, zero_tanh_diag=False, zero_sig_diag=False):
@@ -70,7 +78,7 @@ class RNN:
         total_loss = []
         for n in range(n_epoch):
             cur_inputs, cur_labels = sess.run(self.next_element)
-            init_state = np.zeros((cur_inputs.shape[0], STATE_SIZE))
+            init_state = np.zeros((cur_inputs.shape[0], state_size))
             feed_dict = {self.x: cur_inputs, self.y: cur_labels, self.init_state: init_state}
             states, t_loss, _ = self.sess.run([self.state_series, self.total_loss,
                                                      self.train_op], feed_dict=feed_dict)
@@ -86,49 +94,69 @@ class RNN:
     def run_test(self, inputs, labels, checkpoint):
         """Only one example is input for visualization."""
         self.saver.restore(sess, checkpoint)
-        init_state = np.zeros((1, STATE_SIZE))
+        init_state = np.zeros((inputs.shape[0], state_size))
         feed_dict = {self.x: inputs, self.y: labels, self.init_state: init_state}
         states, pred, loss, total_loss = self.sess.run([self.state_series, self.predictions, self.losses,
                                                                        self.total_loss], feed_dict=feed_dict)
-        weights = self.sess.run(self.W_h)
+        weights, biases = self.sess.run([self.W_h, self.W_b])
 
-        print('test label', labels[0,0,:])
-        print('final state', states[-1])
-        print('final prediction', np.round(pred[-1], 5))
+        cc = 3
+        rr = inputs.shape[0]
+        c, r = 0,0
+        fig, ax = plt.subplots(nrows=rr, ncols=cc)
+        for i in range(inputs.shape[0]):
+            cur_state = [s[i] for s in states]
+            cur_pred = [p[i] for p in pred]
+            cur_label = labels[i,:,:]
 
-        fig, ax = plt.subplots(nrows=2, ncols=3)
-        sns.heatmap(np.concatenate(states, axis=0), cmap='RdBu_r', center=0, vmin=0, vmax=1, ax = ax[0,0])
-        ax[0,0].set_title('Hidden')
-        ax[0,0].axis('off')
+            titles = ['Hidden','Predictions','Labels']
+            data = [cur_state, cur_pred, cur_label]
 
-        sns.heatmap(np.concatenate(pred, axis=0), cmap='RdBu_r', center=0, vmin=0, vmax=1, ax = ax[0,1])
-        ax[0,1].set_title('Predictions')
-        ax[0,1].axis('off')
+            for d, t in zip(data, titles):
+                sns.heatmap(d, cmap='RdBu_r', center=0, vmin=0, vmax=1, ax = ax[r,c], cbar=False)
+                ax[r,c].set_title(t)
+                ax[r,c].axis('off')
+                c+=1
+                if c >= cc:
+                    r += 1
+                    c = 0
 
-        sns.heatmap(labels[0, :, :], cmap='RdBu_r', center=0, vmin=0, vmax=1, ax = ax[0,2])
-        ax[0,2].set_title('Labels')
-        ax[0,2].axis('off')
-
+        fig1, ax = plt.subplots(nrows=2, ncols=3)
         for i,w in enumerate(weights):
-            sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[1,i])
+            sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[0,i], cbar = False)
+            ax[0,i].axis('off')
+            ax[0,i].set_title('W_' + str(i))
+            ax[0,i].axis('equal')
+
+        for i,b in enumerate(biases):
+            sns.heatmap(b.reshape(1,-1), cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[1,i], cbar = False)
             ax[1,i].axis('off')
-            ax[1,i].set_title('W_' + str(i))
+            ax[1,i].set_title('B_' + str(i))
+            ax[1, i].axis('image')
+
+        path = self.path_name
+        fig.savefig(path + '/img0.png', bbox_inches='tight')
+        fig1.savefig(path + '/img1.png', bbox_inches='tight')
 
 
 
 with tf.Session() as sess:
-    STATE_SIZE = 10
-    n_epoch = int(5e3)
-    batch_size = 10
-    n_samples = 10 * batch_size
-    time_steps = 30
+    state_size = 20
+    bump_size = 7
+    bump_std = 1.5
+    n_epoch = int(1e4)
+    batch_size = 5
+    n_samples = 1000
+    time_steps = 20
+    learning_rate = .003
     save_path = 'save_path'
 
-    rnn = RNN(sess, time_steps, save_path, batch_size)
+    rnn = RNN(sess, time_steps, save_path, learning_rate, batch_size)
     sess.run(tf.global_variables_initializer())
-    X, Y, _ = inputs.create_inputs(n_samples, state_size = STATE_SIZE, time_steps=time_steps, bump_size=2,
-                              noise= False,
-                              velocity=False, velocity_start=4, velocity_gap = 5)
+    X, Y, _ = inputs.create_inputs(n_samples, state_size = state_size, time_steps=time_steps,
+                                   bump_size=bump_size, bump_std = bump_std,
+                                   noise= False,
+                                   velocity=False, velocity_start=4, velocity_gap = 5)
 
     run = True
     if run:
@@ -140,9 +168,10 @@ with tf.Session() as sess:
     test = True
     if test:
         load_file = save_path + '/stationary'
-        rnn.run_test(X[0:1, :, :], Y[0:1, :, :], checkpoint=load_file)
+        rnn.run_test(X[0:7, :, :], Y[0:7, :, :], checkpoint=load_file)
 
-    plt.show()
+    plt.show(block=False)
+    time.sleep(3)
     ### Note that the loss can never be zero, as the first input can never produce the right output when the input
     ### weights are the identity matrix.
 

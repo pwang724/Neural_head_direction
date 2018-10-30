@@ -18,7 +18,7 @@ def sum_normalize(x):
         x = x / np.sum(x)
     return x
 
-def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, dev=1,
+def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, bump_std=1,
                   noise=False, noise_intensity=.5, noise_density=.5,
                   velocity=False, velocity_gap=5, velocity_start=1):
     """
@@ -35,7 +35,7 @@ def create_inputs(n_samples, state_size, time_steps=5, bump_size=1, dev=1,
         else:  # even
             bumps = [i for i in range(-span, span + 1) if i != 0]
             middle_bump = span - 1
-        bumps = sum_normalize(norm.pdf(bumps, scale=dev))
+        bumps = sum_normalize(norm.pdf(bumps, scale=bump_std))
 
         input = np.zeros((len(ix), state_size))
         input[:, :bump_size] += bumps
