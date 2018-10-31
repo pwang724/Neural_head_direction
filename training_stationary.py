@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import time
-import scipy.stats as stats
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -152,7 +151,6 @@ class RNN:
 
         #testing
         w_in, w_out, mask = self.sess.run([self.W_in, self.W_out, self.W_h_mask])
-        print(mask)
 
         #plotting
         cc = 3
@@ -207,30 +205,31 @@ class RNN:
 
 def arg_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epoch', type=int, default= int(2e4), help= 'number of epochs')
+    parser.add_argument('--epoch', type=int, default= int(3e4), help= 'number of epochs')
     parser.add_argument('--batch_size', type=int, default= 5, help= 'batch size')
     parser.add_argument('--test_batch_size', type=int, default= 7, help= 'test batch size')
     parser.add_argument('--n_input', type=int, default= 1000, help= 'number of inputs')
-    parser.add_argument('--learning_rate', type=int, default= .001, help= 'learning rate')
+    parser.add_argument('--learning_rate', type=int, default= .002, help= 'learning rate')
     parser.add_argument('--time_steps', type=int, default= 20, help= 'rnn time steps')
     parser.add_argument('--time_loss_start', type=int, default= 5, help= 'start time to assessing loss')
     parser.add_argument('--time_loss_end', type=int, default= 15, help= 'end time for assessing loss')
 
     parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
-    parser.add_argument('--rnn_size', type=int, default= 40, help= 'number of rnn neurons')
+    parser.add_argument('--rnn_size', type=int, default= 25, help= 'number of rnn neurons')
 
-    parser.add_argument('--bump_size', type=int, default= 7, help= 'size of bump')
-    parser.add_argument('--bump_std', type=int, default= 1, help= 'std of bump')
+    parser.add_argument('--bump_size', type=int, default= 6, help= 'size of bump')
+    parser.add_argument('--bump_std', type=int, default= 1.5, help= 'std of bump')
 
     parser.add_argument('--noise', action='store_true', default=False, help='noise boolean')
     parser.add_argument('--noise_intensity', type=float, default= .25, help= 'noise intensity')
     parser.add_argument('--noise_density', type=float, default= .5, help= 'noise density')
 
     parser.add_argument('--velocity', action='store_true', default=False, help='velocity boolean')
+    parser.add_argument('--velocity_size', type=int, default=2, help='velocity state size')
     parser.add_argument('--velocity_start', type=int, default=5, help='velocity start')
     parser.add_argument('--velocity_gap', type=int, default=5, help='velocity gap')
 
-    parser.add_argument('--save_path', type=str, default='./test/_', help='save folder')
+    parser.add_argument('--save_path', type=str, default='./stationary/_', help='save folder')
     parser.add_argument('--file_name', type=str, default='_', help='file name within save path')
     return parser
 
