@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import time
+import pickle as pkl
+
+import utils as utils
+import rnn_cell as rnn
+import stationary as st
+import non_stationary as non_st
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -14,13 +20,15 @@ import time
 
 class RNN:
     """An RNN made to model 1D attractor network"""
-
     def __init__(self, sess, opts):
+        stationary = opts.stationary
         time_steps = opts.time_steps
         state_size = opts.state_size
+        velocity_size = opts.velocity_size
+        rnn_size = opts.rnn_size
+
         save_path = opts.save_path
         learning_rate = opts.learning_rate
-        rnn_size = opts.rnn_size
         time_loss_start = opts.time_loss_start
         time_loss_end= opts.time_loss_end
 
@@ -29,79 +37,42 @@ class RNN:
 
         self.sess = sess
         self.batch_size = tf.placeholder(tf.int32, [], name='batch_size')
-        self.x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
-        self.y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
+        if stationary:
+            self.x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
+        else:
+            self.x = tf.placeholder(tf.float32, [None, time_steps, state_size + velocity_size],
+                                    name='input_placeholder')
 
+        self.y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
         inputs_series = tf.unstack(self.x, axis=1)
         labels_series = tf.unstack(self.y, axis=1)
 
-        W_in = np.zeros((state_size, rnn_size))
-        np.fill_diagonal(W_in, 1)
-        self.W_in = tf.constant(W_in, dtype= tf.float32)
-
-        W_out= np.zeros((rnn_size, state_size))
-        np.fill_diagonal(W_out, 1)
-        self.W_out = tf.constant(W_out, dtype= tf.float32)
-
-        self.W_h_mask = tf.get_variable('W_h_mask', shape=[rnn_size, rnn_size], dtype = tf.float32, trainable= False)
-        self.W_h = tf.get_variable('W_h', shape=[rnn_size, rnn_size])
-        self.W_b = tf.get_variable('b', shape=[rnn_size], initializer=tf.constant_initializer(0.0))
+        if stationary:
+            self.k, self.weight_dict, trainable_list, self.plot_dict = st.define_stationary_weights(opts)
+            rnn_func = st.rnn_stationary
+        else:
+            self.k, self.weight_dict, trainable_list, self.plot_dict = st.define_nonstationary_weights(opts)
+            rnn_func = st.rnn_non_stationary
 
         init_state = tf.zeros(shape=[self.batch_size, rnn_size], dtype= tf.float32)
         state_series = [init_state]
         for i, current_input in enumerate(inputs_series):
-            next_state = self.rnn(state_series[-1], current_input, i)
+            next_state = rnn_func(self.weight_dict, self.k, state_series[-1], current_input, i, opts)
             state_series.append(next_state)
 
         self.state_series = state_series
-        self.logits = [tf.matmul(s, self.W_out) for s in state_series]
+        W_out_tf = self.weight_dict[self.k.W_out]
+        self.logits = [tf.matmul(s, W_out_tf) for s in state_series]
         self.predictions = [tf.nn.softmax(l) for l in self.logits]
         losses = [tf.nn.softmax_cross_entropy_with_logits_v2(logits=l, labels=labels)
                   for l, labels in zip(self.logits, labels_series)]
 
         self.total_loss = tf.reduce_mean(losses[time_loss_start:time_loss_end])
-        self.train_op = tf.train.AdamOptimizer(learning_rate).minimize(self.total_loss, var_list=[self.W_h, self.W_b])
-        self.saver = tf.train.Saver({"W_h": self.W_h, "W_b":self.W_b, "W_h_mask": self.W_h_mask})
 
-    def make_input(self, batch_size):
-        data = tf.data.Dataset.from_tensor_slices((self.x, self.y))
-        data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
-        train_iter = data.make_initializable_iterator()
-        next_element = train_iter.get_next()
-        return train_iter, next_element
+        optimizer= tf.train.AdamOptimizer(learning_rate)
+        self.train_op = optimizer.minimize(self.total_loss, var_list= trainable_list)
+        self.saver = tf.train.Saver()
 
-    def initialize_weights(self, opt):
-        state_size = opt.state_size
-        rnn_size = opt.rnn_size
-
-        W_h_mask = self.W_h_mask.eval()
-        W_h_mask[:,:] = 1
-        # np.fill_diagonal(W_h_mask[:state_size, :state_size], 0)
-        np.fill_diagonal(W_h_mask, 0)
-
-        W_h = self.W_h.eval()
-        # np.fill_diagonal(W_h[:state_size, :state_size], 0)
-        np.fill_diagonal(W_h, 0)
-
-        self.sess.run(tf.assign(self.W_h_mask, W_h_mask))
-        self.sess.run(tf.assign(self.W_h, W_h))
-
-    def gru(self, h_prev, input, name):
-        #  update gate
-        z = tf.sigmoid(input + tf.matmul(h_prev, self.W_h[0]))
-        #  reset gate
-        r = tf.sigmoid(input + tf.matmul(h_prev, self.W_h[1]))
-        #  intermediate
-        h = tf.tanh(input + tf.matmul((r * h_prev), self.W_h[2]), name='time_{}'.format(name))
-        # new state
-        st = (1 - z) * h + (z * h_prev)
-        return st
-
-    def rnn(self, h_prev, input, name):
-        W_h = tf.multiply(self.W_h, self.W_h_mask)
-        out = tf.tanh(self.W_b + tf.matmul(input,self.W_in) + tf.matmul(h_prev, W_h),
-                      name='time_{}'.format(name))
-        return out
 
     def run_training(self, inputs, labels, opts):
         """
@@ -112,24 +83,30 @@ class RNN:
         n_epoch = opts.epoch
         save_path = opts.save_path
         file_name = opts.file_name
+        stationary = opts.stationary
 
-        train_iter, next_element = self.make_input(opts.batch_size)
+        train_iter, next_element = utils.make_input(self.x, self.y, opts.batch_size)
         sess.run(train_iter.initializer, feed_dict={self.x: inputs, self.y: labels})
-        self.initialize_weights(opts)
-        plt.imshow(sess.run(self.W_h_mask))
+        if stationary:
+            st.initialize_stationary_weights(sess, opts, self.weight_dict, self.k)
+        else:
+            st.initialize_nonstationary_weights(sess, opts, self.weight_dict, self.k)
 
         loss, logits = [], []
         for ep in range(n_epoch):
             cur_inputs, cur_labels = sess.run(next_element)
             feed_dict = {self.x: cur_inputs, self.y: cur_labels, self.batch_size: opts.batch_size}
             logits, cur_loss, _ = self.sess.run([self.logits, self.total_loss,
-                                               self.train_op], feed_dict=feed_dict)
+                                                 self.train_op], feed_dict=feed_dict)
             if ep % 20 == 0:
                 loss.append(cur_loss)
             if (ep+1) % 100 == 0:
                 print('[*] Epoch %d  total_loss=%.2f' % (ep, cur_loss))
 
-        self.saver.save(self.sess, os.path.join("./",save_path, file_name))
+        path_name = os.path.join("./", save_path, file_name)
+        if st: #save matrices to load for non-stationary
+            st.save_stationary_weights(self.sess, self.weight_dict, self.k, path_name)
+        self.saver.save(self.sess, os.path.join(path_name))
 
         fig, ax = plt.subplots(nrows=1, ncols=2)
         ax[0].set_title('Loss')
@@ -139,6 +116,7 @@ class RNN:
 
     def run_test(self, inputs, labels, opts):
         """Visualization of trained network."""
+        k = self.k
         save_path = opts.save_path
         file_name = opts.file_name
         batch_size = opts.test_batch_size
@@ -147,10 +125,6 @@ class RNN:
         feed_dict = {self.x: inputs, self.y: labels, self.batch_size: batch_size}
         states, predictions, total_loss = \
             self.sess.run([self.logits, self.predictions, self.total_loss], feed_dict=feed_dict)
-        weights, biases = self.sess.run([self.W_h, self.W_b])
-
-        #testing
-        w_in, w_out, mask = self.sess.run([self.W_in, self.W_out, self.W_h_mask])
 
         #plotting
         cc = 3
@@ -178,34 +152,31 @@ class RNN:
                     r += 1
                     c = 0
 
-        fig1, ax = plt.subplots(nrows=2, ncols=2)
-        state_size = opts.state_size
-        weights_ = np.copy(weights)
-        cols = weights_[:, state_size:]
-        ix = np.arange(cols.shape[0]).reshape(1,-1)
-        moment = np.matmul(ix, cols).flatten()
-        sort_ix = np.argsort(moment)
-        weights_[:,state_size:] = weights_[:, state_size+sort_ix]
-        weights_[state_size:,:] = weights_[state_size+sort_ix, :]
+        plot_dict = {k: self.sess.run(v) for k, v in self.plot_dict.items()}
+        W_b = plot_dict[k.W_b]
+        plot_dict[k.W_b] = W_b.reshape(1,-1)
 
-        for i, w in enumerate([weights, weights_]):
-            sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[0,i], cbar = False)
-            ax[0,i].set_title('W')
-            ax[0,i].axis('off')
-            ax[0,i].axis('equal')
+        cc, rr = 2, 4
+        c, r = 0,0
+        fig1, ax = plt.subplots(nrows=rr, ncols=cc)
+        for k, w in plot_dict.items():
+            sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[r,c], cbar = False)
+            ax[r,c].set_title(k)
+            ax[r,c].axis('off')
+            ax[r,c].axis('equal')
+            c += 1
+            if c >= cc:
+                r += 1
+                c = 0
 
-        # for i,b in enumerate(biases):
-        sns.heatmap(biases.reshape(1,-1), cmap='RdBu_r', vmin=-1, vmax=1, ax= ax[1,0], cbar = False)
-        ax[1,0].axis('off')
-        ax[1,0].set_title('B')
-        ax[1,0].axis('image')
-
-        fig.savefig(save_path + '/img0.png', bbox_inches='tight')
-        fig1.savefig(save_path + '/img1.png', bbox_inches='tight')
+        fig.savefig(save_path + '/test_trials.png', bbox_inches='tight')
+        fig1.savefig(save_path + '/weights.png', bbox_inches='tight')
 
 def arg_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epoch', type=int, default= int(3e4), help= 'number of epochs')
+    parser.add_argument('--stationary', action='store_true', default=False, help='stationary or non-stationary training')
+
+    parser.add_argument('--epoch', type=int, default= int(1e3), help= 'number of epochs')
     parser.add_argument('--batch_size', type=int, default= 5, help= 'batch size')
     parser.add_argument('--test_batch_size', type=int, default= 7, help= 'test batch size')
     parser.add_argument('--n_input', type=int, default= 1000, help= 'number of inputs')
@@ -213,6 +184,13 @@ def arg_parser():
     parser.add_argument('--time_steps', type=int, default= 20, help= 'rnn time steps')
     parser.add_argument('--time_loss_start', type=int, default= 5, help= 'start time to assessing loss')
     parser.add_argument('--time_loss_end', type=int, default= 15, help= 'end time for assessing loss')
+
+    parser.add_argument('--load_weights', action='store_true', default= False,
+                        help= 'load pre-trained weights on stationary problem?')
+    parser.add_argument('--fix_weights', action='store_true', default= True,
+                        help= 'hidden weights for state to state trainable?')
+    parser.add_argument('--dir_weights', type=str, default='./stationary/_/_.pkl',
+                        help='directory of saved weights on stationary problem')
 
     parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
     parser.add_argument('--rnn_size', type=int, default= 25, help= 'number of rnn neurons')
@@ -224,12 +202,12 @@ def arg_parser():
     parser.add_argument('--noise_intensity', type=float, default= .25, help= 'noise intensity')
     parser.add_argument('--noise_density', type=float, default= .5, help= 'noise density')
 
-    parser.add_argument('--velocity', action='store_true', default=False, help='velocity boolean')
+    parser.add_argument('--velocity', action='store_true', default=True, help='velocity boolean')
     parser.add_argument('--velocity_size', type=int, default=2, help='velocity state size')
     parser.add_argument('--velocity_start', type=int, default=5, help='velocity start')
     parser.add_argument('--velocity_gap', type=int, default=5, help='velocity gap')
 
-    parser.add_argument('--save_path', type=str, default='./stationary/_', help='save folder')
+    parser.add_argument('--save_path', type=str, default='./test/t', help='save folder')
     parser.add_argument('--file_name', type=str, default='_', help='file name within save path')
     return parser
 
@@ -249,7 +227,7 @@ if __name__ == '__main__':
 
         run = True
         if run:
-            weights, loss = rnn.run_training(X, Y, opts)
+            W_h, loss = rnn.run_training(X, Y, opts)
 
         test = True
         if test:
