@@ -9,9 +9,7 @@ import time
 import pickle as pkl
 
 import utils as utils
-import rnn_cell as rnn
 import stationary as st
-import non_stationary as non_st
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -176,20 +174,20 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stationary', action='store_true', default=False, help='stationary or non-stationary training')
 
-    parser.add_argument('--epoch', type=int, default= int(1e3), help= 'number of epochs')
+    parser.add_argument('--epoch', type=int, default= int(1e4), help= 'number of epochs')
     parser.add_argument('--batch_size', type=int, default= 5, help= 'batch size')
     parser.add_argument('--test_batch_size', type=int, default= 7, help= 'test batch size')
     parser.add_argument('--n_input', type=int, default= 1000, help= 'number of inputs')
     parser.add_argument('--learning_rate', type=int, default= .002, help= 'learning rate')
     parser.add_argument('--time_steps', type=int, default= 20, help= 'rnn time steps')
-    parser.add_argument('--time_loss_start', type=int, default= 5, help= 'start time to assessing loss')
-    parser.add_argument('--time_loss_end', type=int, default= 15, help= 'end time for assessing loss')
+    parser.add_argument('--time_loss_start', type=int, default= 1, help= 'start time to assessing loss')
+    parser.add_argument('--time_loss_end', type=int, default= 25, help= 'end time for assessing loss')
 
-    parser.add_argument('--load_weights', action='store_true', default= False,
+    parser.add_argument('--load_weights', action='store_true', default= True,
                         help= 'load pre-trained weights on stationary problem?')
-    parser.add_argument('--fix_weights', action='store_true', default= True,
+    parser.add_argument('--fix_weights', action='store_true', default= False,
                         help= 'hidden weights for state to state trainable?')
-    parser.add_argument('--dir_weights', type=str, default='./stationary/_/_.pkl',
+    parser.add_argument('--dir_weights', type=str, default='./test/stationary/_.pkl',
                         help='directory of saved weights on stationary problem')
 
     parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
@@ -205,9 +203,9 @@ def arg_parser():
     parser.add_argument('--velocity', action='store_true', default=True, help='velocity boolean')
     parser.add_argument('--velocity_size', type=int, default=2, help='velocity state size')
     parser.add_argument('--velocity_start', type=int, default=5, help='velocity start')
-    parser.add_argument('--velocity_gap', type=int, default=5, help='velocity gap')
+    parser.add_argument('--velocity_gap', type=int, default=3, help='velocity gap')
 
-    parser.add_argument('--save_path', type=str, default='./test/t', help='save folder')
+    parser.add_argument('--save_path', type=str, default='./test/non_stationary', help='save folder')
     parser.add_argument('--file_name', type=str, default='_', help='file name within save path')
     return parser
 
