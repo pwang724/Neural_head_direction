@@ -171,18 +171,7 @@ def initialize_stationary_weights(sess, opt, weight_dict, k):
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
     sess.run(tf.assign(W_h_tf, W_h))
 
-def save_stationary_weights(sess, weight_dict, k, path_name):
-    tf_dict = {k.W_h: weight_dict[k.W_h], k.W_b: weight_dict[k.W_b], k.W_h_mask: weight_dict[k.W_h_mask]}
-    save_dict = {k: sess.run(v) for k, v in tf_dict.items()}
+def save_weights(sess, weight_dict, path_name):
+    save_dict = {k: sess.run(v) for k, v in weight_dict.items()}
     with open(path_name + ".pkl", 'wb') as f:
         pkl.dump(save_dict, f)
-
-    #TODO: sort state_vector
-    # state_size = opts.state_size
-    # W_h_sorted = np.copy(W_h)
-    # cols = W_h_sorted[:, state_size:]
-    # ix = np.arange(cols.shape[0]).reshape(1,-1)
-    # moment = np.matmul(ix, cols).flatten()
-    # sort_ix = np.argsort(moment)
-    # W_h_sorted[:,state_size:] = W_h_sorted[:, state_size+sort_ix]
-    # W_h_sorted[state_size:,:] = W_h_sorted[state_size+sort_ix, :]

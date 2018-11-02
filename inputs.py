@@ -3,11 +3,11 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
-import argparse
+import config
+import noise
 
 # set seed for reproducibility
 # np.random.seed(2)
-
 def sum_normalize(x):
     """Normalize by sum row-wise."""
     if len(x.shape) > 1: #matrix
@@ -32,8 +32,6 @@ def create_inputs(opts):
     noise_intensity = opts.noise_intensity
 
     velocity = opts.velocity
-    velocity_start = opts.velocity_start
-    velocity_gap = opts.velocity_gap
 
 
     def make_bumps(ix):
@@ -72,36 +70,43 @@ def create_inputs(opts):
                 labels[ix[i]:, :] = cur
         return labels
 
-    assert velocity_start < time_steps, "first velocity command occurs after last time-step"
 
     ix = np.random.randint(low=0, high=state_size, size=n_input)
-    input = make_bumps(ix)
+    input_unpadded = make_bumps(ix)
     batch_size = len(ix)
+
+    # pad the inputs for time. inputs are batch X time X STATE_SIZE
+    input = np.expand_dims(input_unpadded, axis=1)
+    pad = np.zeros((batch_size, time_steps - 1, input.shape[2]))
+    input = np.concatenate((input, pad), axis = 1)
 
     if noise:
         # sample noisy positions, sample noise for those positions, add noise to inputs
         assert 0 <= noise_density <= 1, "Density is not between 0 and 1"
         assert 0 <= noise_intensity <= 1, "Intensity is not between 0 and 1"
-        max_noise = np.amax(input[0]) * noise_intensity
+        max_noise = np.amax(input_unpadded[0]) * noise_intensity
         noise = np.random.uniform(low=0, high=max_noise, size=input.shape)
+        noise[:,0,:]=0 #noise at first time point is zero
+        noise_mask = np.random.uniform(size=noise.shape)
+        noise[noise_mask < noise_density] *= 0  # take density % of noise
+        input += + noise
 
-        inactive_mask = input == 0
-        noise_sample = np.random.uniform(size=noise.shape)
-        noise[noise_sample < noise_density] *= 0  # take density % of noise
-        noise *= inactive_mask  # remove noise from true activity
-        input_noise = input + noise
-        input_noise = sum_normalize(input_noise)
-    else:
-        input_noise = input
-
-    # pad the inputs for time. inputs are batch X time X STATE_SIZE
-    inputs = np.expand_dims(input_noise, axis=1)
-    pad = np.zeros((batch_size, time_steps - 1, inputs.shape[2]))
-    inputs = np.concatenate((inputs, pad), axis = 1)
+        # input = sum_normalize(input)
+        # inactive_mask = input == 0
+        # noise *= inactive_mask  # remove noise from true activity
+    # else:
+    #     input = input_unpadded
 
     if velocity:
+        velocity_start = opts.velocity_start
+        velocity_gap = opts.velocity_gap
+        velocity_max = opts.velocity_max
+        assert velocity_start < time_steps, "first velocity command occurs after last time-step"
+        vel_range = [i for i in range(-velocity_max, velocity_max + 1) if i != 0]
+
         vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
-        vel_options = np.array([-1, 1])
+
+        vel_options = np.array(vel_range)
         vel_per_batch = len(vel_ix)
         one_hot_len = len(vel_options)
         vel_total = vel_per_batch * batch_size
@@ -115,43 +120,27 @@ def create_inputs(opts):
         shift = vel_options[vel_direction]
         shift = shift.reshape(batch_size, vel_per_batch)
         # concatenate states with velocities
-        velocity = np.zeros((inputs.shape[0], inputs.shape[1], one_hot_len))
+        velocity = np.zeros((input.shape[0], input.shape[1], one_hot_len))
         velocity[:, vel_ix, :] = vel_one_hot
 
-        inputs = np.concatenate([inputs, velocity], axis=2)
+        input = np.concatenate([input, velocity], axis=2)
         # create labels from input
-        labels = [create_labels(x, s, vel_ix) for x, s in zip(input, shift)]
+        labels = [create_labels(x, s, vel_ix) for x, s in zip(input_unpadded, shift)]
         labels = np.stack(labels, axis=0)
     else:
-        labels = [create_labels(x, [], []) for x in input]
+        labels = [create_labels(x, [], []) for x in input_unpadded]
         labels = np.stack(labels, axis=0)
         vel_per_batch = 0
 
-    return inputs, labels, vel_per_batch
-
-def arg_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--n_input', type=int, default= 5, help= 'number of inputs')
-    parser.add_argument('--time_steps', type=int, default=100, help='rnn time steps')
-    parser.add_argument('--state_size', type=int, default= 20, help= 'size of state')
-
-    parser.add_argument('--bump_size', type=int, default= 5, help= 'size of bump')
-    parser.add_argument('--bump_std', type=int, default= 2, help= 'std of bump')
-
-    parser.add_argument('--noise', action='store_true', default=False, help='noise boolean')
-    parser.add_argument('--noise_intensity', type=float, default= .25, help= 'noise intensity')
-    parser.add_argument('--noise_density', type=float, default= .5, help= 'noise density')
-
-    parser.add_argument('--velocity', action='store_true', default=True, help='velocity boolean')
-    parser.add_argument('--velocity_start', type=int, default=5, help='velocity start')
-    parser.add_argument('--velocity_gap', type=int, default=5, help='velocity gap')
-    return parser
+    return input, labels
 
 
 if __name__ == '__main__':
-    parser = arg_parser()
-    opts = parser.parse_args()
-    inputs, labels, _ = create_inputs(opts)
+    stationary = config.stationary_input_config()
+    non_stationary = config.non_stationary_input_config()
+
+    opts = non_stationary
+    inputs, labels = create_inputs(opts)
 
     print(inputs.shape)
     print(labels.shape)
@@ -159,12 +148,12 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(nrows=1, ncols=2)
     plt.axis('off')
     ax[0].set_title('Input')
-    sns.heatmap(inputs[0], vmin =0, vmax = 1, cbar=False, ax = ax[0])
+    sns.heatmap(inputs[0], vmin =0, vmax = .5, cbar=False, ax = ax[0])
     ax[0].yaxis.set_major_locator(ticker.MultipleLocator(5))
     ax[0].yaxis.set_major_formatter(ticker.ScalarFormatter())
 
     ax[1].set_title('Label')
-    sns.heatmap(labels[0], vmin=0, vmax=1, cbar=True, ax = ax[1])
+    sns.heatmap(labels[0], vmin=0, vmax=.5, cbar=True, ax = ax[1])
     ax[1].yaxis.set_major_locator(ticker.MultipleLocator(5))
     ax[1].yaxis.set_major_formatter(ticker.ScalarFormatter())
 
