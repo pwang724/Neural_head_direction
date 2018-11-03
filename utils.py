@@ -39,14 +39,15 @@ def pretty_image(tup, col, row, save_name):
     fig, ax = plt.subplots(nrows=row, ncols=col)
     for t, w in tup:
         sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax=ax[r, c], cbar=False)
-        ax[r, c].set_title(t)
+        if t != '':
+            ax[r, c].set_title(t)
         ax[r, c].axis('off')
         ax[r, c].axis('equal')
         c += 1
         if c >= col:
             r += 1
             c = 0
-    fig.savefig(save_name, bbox_inches='tight')
+    fig.savefig(save_name, bbox_inches='tight', figsize = (14,10), dpi=300)
 
 def pretty_plot(tup, col, row, save_name):
     """input: list of tuples
@@ -62,7 +63,7 @@ def pretty_plot(tup, col, row, save_name):
         if c >= col:
             r += 1
             c = 0
-    fig.savefig(save_name, bbox_inches='tight')
+    fig.savefig(save_name, bbox_inches='tight', figsize= (14,10), dpi=300)
 
 def make_modified_path(name):
     n = 0

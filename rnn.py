@@ -151,6 +151,7 @@ def initialize_nonstationary_weights(sess, opts, weight_dict, k):
     W_h_mask = W_h_mask_tf.eval()
     W_h_mask[:,:] = 1
     np.fill_diagonal(W_h_mask, 0)
+    W_h_mask[state_size:,state_size:] = 0
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
 
 def initialize_stationary_weights(sess, opt, weight_dict, k):
@@ -161,12 +162,12 @@ def initialize_stationary_weights(sess, opt, weight_dict, k):
 
     W_h_mask = W_h_mask_tf.eval()
     W_h_mask[:, :] = 1
-    # np.fill_diagonal(W_h_mask[:state_size, :state_size], 0)
+    W_h_mask[state_size:, state_size:] = 0
     np.fill_diagonal(W_h_mask, 0)
 
     W_h = W_h_tf.eval()
-    # np.fill_diagonal(W_h[:state_size, :state_size], 0)
     np.fill_diagonal(W_h, 0)
+    W_h[state_size:, state_size:] = 0
 
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
     sess.run(tf.assign(W_h_tf, W_h))

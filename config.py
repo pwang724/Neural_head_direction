@@ -41,8 +41,9 @@ class non_stationary_input_config(shared_input_config):
         self.velocity = True
         self.velocity_start = 5
         self.velocity_gap = 3
-        self.velocity_max = 1
+        self.velocity_max = 3
         self.velocity_size = self.velocity_max * 2
+        self.velocity_use = [1, 3]
         self.time_steps = 50
 
 class non_stationary_model_config(non_stationary_input_config):

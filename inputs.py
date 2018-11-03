@@ -16,6 +16,17 @@ def sum_normalize(x):
         x = x / np.sum(x)
     return x
 
+def correlated_random(x, size):
+    l = []
+    low, high = 2, 4
+    while len(l) < size:
+        duration = np.random.randint(low=4, high=8)
+        value = np.random.choice(x)
+        for i in range(duration):
+            l.append(value)
+    l = l[:size]
+    return np.array(l)
+
 def create_inputs(opts):
     """
     Create inputs and labels for training.
@@ -80,6 +91,39 @@ def create_inputs(opts):
     pad = np.zeros((batch_size, time_steps - 1, input.shape[2]))
     input = np.concatenate((input, pad), axis = 1)
 
+    if velocity:
+        velocity_start = opts.velocity_start
+        velocity_gap = opts.velocity_gap
+        velocity_use = opts.velocity_use
+        velocity_max = opts.velocity_max
+        assert velocity_start < time_steps, "first velocity command occurs after last time-step"
+
+        one_hot_len = 2 * velocity_max
+        vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
+        vel_per_batch = len(vel_ix)
+        vel_total = vel_per_batch * batch_size
+        vel_options = np.array([-1 * l for l in velocity_use] + [l-1 for l in velocity_use])
+
+        vel_direction = correlated_random(vel_options + velocity_max, size= vel_total)
+        vel_one_hot = np.zeros((vel_total, one_hot_len))
+        vel_one_hot[np.arange(vel_total), vel_direction] = 1
+        vel_one_hot = vel_one_hot.reshape(batch_size, vel_per_batch, one_hot_len)
+        velocity = np.zeros((input.shape[0], input.shape[1], one_hot_len))
+        velocity[:, vel_ix, :] = vel_one_hot
+        input = np.concatenate([input, velocity], axis=2)
+
+        vel_options = np.array([i for i in range(-velocity_max, velocity_max+1) if i != 0])
+        shift = vel_options[vel_direction]
+        shift = shift.reshape(batch_size, vel_per_batch)
+
+        # create labels from input
+
+        labels = [create_labels(x, s, vel_ix) for x, s in zip(input_unpadded, shift)]
+        labels = np.stack(labels, axis=0)
+    else:
+        labels = [create_labels(x, [], []) for x in input_unpadded]
+        labels = np.stack(labels, axis=0)
+
     if noise:
         # sample noisy positions, sample noise for those positions, add noise to inputs
         assert 0 <= noise_density <= 1, "Density is not between 0 and 1"
@@ -90,47 +134,6 @@ def create_inputs(opts):
         noise_mask = np.random.uniform(size=noise.shape)
         noise[noise_mask < noise_density] *= 0  # take density % of noise
         input += + noise
-
-        # input = sum_normalize(input)
-        # inactive_mask = input == 0
-        # noise *= inactive_mask  # remove noise from true activity
-    # else:
-    #     input = input_unpadded
-
-    if velocity:
-        velocity_start = opts.velocity_start
-        velocity_gap = opts.velocity_gap
-        velocity_max = opts.velocity_max
-        assert velocity_start < time_steps, "first velocity command occurs after last time-step"
-        vel_range = [i for i in range(-velocity_max, velocity_max + 1) if i != 0]
-
-        vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
-
-        vel_options = np.array(vel_range)
-        vel_per_batch = len(vel_ix)
-        one_hot_len = len(vel_options)
-        vel_total = vel_per_batch * batch_size
-
-        vel_direction = np.random.randint(len(vel_options), size=vel_total)
-        vel_one_hot = np.zeros((vel_total, one_hot_len))
-        vel_one_hot[np.arange(vel_total), vel_direction] = 1
-        # vel_one_hot = np.expand_dims(vel_one_hot, axis=1)
-        vel_one_hot = vel_one_hot.reshape(batch_size, vel_per_batch, one_hot_len)
-
-        shift = vel_options[vel_direction]
-        shift = shift.reshape(batch_size, vel_per_batch)
-        # concatenate states with velocities
-        velocity = np.zeros((input.shape[0], input.shape[1], one_hot_len))
-        velocity[:, vel_ix, :] = vel_one_hot
-
-        input = np.concatenate([input, velocity], axis=2)
-        # create labels from input
-        labels = [create_labels(x, s, vel_ix) for x, s in zip(input_unpadded, shift)]
-        labels = np.stack(labels, axis=0)
-    else:
-        labels = [create_labels(x, [], []) for x in input_unpadded]
-        labels = np.stack(labels, axis=0)
-        vel_per_batch = 0
 
     return input, labels
 
