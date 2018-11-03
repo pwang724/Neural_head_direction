@@ -68,13 +68,13 @@ class RNN:
         W_h_ab = W_h[:, state_size:]
         W_h_ba = W_h[state_size:,:]
         weight_constant = 0
-        self.weight_loss = tf.reduce_mean(tf.square(W_h_ab)) + tf.reduce_mean(tf.square(W_h_ba))
+        self.weight_loss = weight_constant * (tf.reduce_mean(tf.square(W_h_ab)) + tf.reduce_mean(tf.square(W_h_ba)))
 
         rnn_activity = tf.stack(state_series, axis=1)
         extra_neurons_activity = rnn_activity[:,:,state_size:]
-        activity_constant = .1
-        self.activity_loss = tf.reduce_mean(tf.square(extra_neurons_activity))
-        self.total_loss = self.xe_loss + weight_constant * self.weight_loss + activity_constant * self.activity_loss
+        activity_constant = 0.1
+        self.activity_loss = activity_constant * tf.reduce_mean(extra_neurons_activity)
+        self.total_loss = self.xe_loss + self.weight_loss + self.activity_loss
 
         optimizer= tf.train.AdamOptimizer(learning_rate)
         self.train_op = optimizer.minimize(self.total_loss, var_list= trainable_list)
@@ -164,8 +164,8 @@ class RNN:
 
         batch_size = opts.test_batch_size
         feed_dict = {self.x: inputs, self.y: labels, self.batch_size: batch_size}
-        states, predictions, total_loss = \
-            self.sess.run([self.states, self.predictions, self.total_loss], feed_dict=feed_dict)
+        states, predictions = \
+            self.sess.run([self.states, self.predictions], feed_dict=feed_dict)
         plot_dict = {k: self.sess.run(v) for k, v in self.plot_dict.items()}
 
         #plot sorted_weights
@@ -240,7 +240,7 @@ class RNN:
         W_b = plot_dict[k.W_b]
         plot_dict[k.W_b] = W_b.reshape(1,-1)
         plot_name = save_path + '/weights.png'
-        utils.pretty_image(plot_dict.items(), col= 2, row=3, save_name= plot_name)
+        utils.pretty_image(plot_dict.items(), col= 2, row=4, save_name= plot_name)
 
 if __name__ == '__main__':
     st_input_opts = config.stationary_input_config

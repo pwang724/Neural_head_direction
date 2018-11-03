@@ -7,6 +7,8 @@ import inputs
 import copy
 import time
 
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stationary_path', type=str,
@@ -18,7 +20,7 @@ def arg_parser():
 def curriculum():
     parser = arg_parser()
     opts = parser.parse_args()
-    rnn_size = 50
+    rnn_size = 80
 
     st_model_opts = config.stationary_model_config()
     st_model_opts.save_path = opts.stationary_path
@@ -47,14 +49,14 @@ def curriculum():
     second.velocity_use = [1]
 
     second_more = copy.deepcopy(nonst_model_opts)
-    second_more.epoch = int(2e4 + 1)
+    second_more.epoch = int(4e4 + 1)
     second_more.load_checkpoint = True
     second_more.time_steps = 25
     second_more.time_loss_end = 25
     second_more.velocity_use = [1]
     
     third = copy.deepcopy(nonst_model_opts)
-    third.epoch = int(4e4 + 1)
+    third.epoch = int(2e4 + 1)
     third.load_checkpoint = True
     third.velocity_use = [1,2]
     third.time_steps = 25
@@ -62,10 +64,11 @@ def curriculum():
 
     third_more = copy.deepcopy(nonst_model_opts)
     third_more.load_checkpoint = True
-    third_more.epoch = int(2e4 + 1)
+    third_more.epoch = int(4e4 + 1)
     third_more.velocity_use = [1,2]
-    third_more.time_steps = 25
-    third_more.time_loss_end = 25
+    third_more.time_steps = 100
+    third_more.time_loss_end = 50
+    third_more.test_batch_size = 3
     
     fourth = copy.deepcopy(nonst_model_opts)
     fourth.load_checkpoint = True
@@ -74,8 +77,8 @@ def curriculum():
     fourth.time_steps = 25
     fourth.time_loss_end = 25
 
-    # c= [first_more]
-    c = [second, second_more]
+    # c= [first, first_more]
+    c = [third_more]
     return c
 
 if __name__ == '__main__':
@@ -88,9 +91,9 @@ if __name__ == '__main__':
                     rnn = train.RNN(sess, c)
                     sess.run(tf.global_variables_initializer())
                     X, Y = inputs.create_inputs(c)
-                    rnn.run_training(X, Y, c)
-                    # e = c.test_batch_size
-                    # rnn.run_test(X[:e, :, :], Y[:e, :, :], c)
+                    # rnn.run_training(X, Y, c)
+                    e = c.test_batch_size
+                    rnn.run_test(X[:e, :, :], Y[:e, :, :], c)
 
                     print('[!] Curriculum %d has finished' % (i))
                     # time.sleep(2)

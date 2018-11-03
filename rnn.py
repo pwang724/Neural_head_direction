@@ -10,10 +10,11 @@ def define_nonstationary_weights(opts):
     fix_weights = opts.fix_weights
 
     #weights
-    weight_struct = namedtuple("weight_struct", "W_i_a W_i_b W_h W_h_aa W_h_ba W_h_ab_bb W_h_mask W_out W_b")
+    weight_struct = namedtuple("weight_struct", "W_i_a W_i_b W_h W_h_aa W_h_ba W_h_ab_bb W_h_mask W_out W_b W_h_z W_h_r")
     k = weight_struct(W_i_a='W_i_a', W_i_b='W_i_b',
                       W_h_aa= 'W_h_aa', W_h_ba= 'W_h_ba', W_h_ab_bb= 'W_h_ab_bb', W_b='W_b',
                       W_h_mask='W_h_mask', W_h= 'W_h',
+                      W_h_z = 'W_h_z', W_h_r = 'W_h_r',
                       W_out='W_out')
 
     # input weights
@@ -27,25 +28,28 @@ def define_nonstationary_weights(opts):
     W_out = tf.constant(W_out_np, dtype=tf.float32)
 
     # hidden weights
-    W_h_mask = tf.get_variable('W_h_mask', shape=[rnn_size, rnn_size], dtype=tf.float32)
-    W_h_aa = tf.get_variable('W_h_aa', shape=[state_size, state_size])
-    W_h_ba = tf.get_variable('W_h_ba', shape=[support_size, state_size])
-    W_h_ab_bb = tf.get_variable('W_ab_bb', shape=[rnn_size, support_size])
-    W_b = tf.get_variable('b', shape=[rnn_size], initializer=tf.constant_initializer(0.0))
+    W_h_mask = tf.get_variable(k.W_h_mask, shape=[rnn_size, rnn_size], dtype=tf.float32)
+    W_h_aa = tf.get_variable(k.W_h_aa, shape=[state_size, state_size])
+    W_h_ba = tf.get_variable(k.W_h_ba, shape=[support_size, state_size])
+    W_h_ab_bb = tf.get_variable(k.W_h_ab_bb, shape=[rnn_size, support_size])
+    W_b = tf.get_variable(k.W_b, shape=[rnn_size], initializer=tf.constant_initializer(0.0))
     W_h_left = tf.concat([W_h_aa, W_h_ba], axis=0)
     W_h = tf.concat([W_h_left, W_h_ab_bb], axis=1)
+    W_h_z = tf.get_variable(k.W_h_z, shape=[rnn_size, rnn_size], dtype = tf.float32)
+    W_h_r = tf.get_variable(k.W_h_r, shape=[rnn_size, rnn_size], dtype = tf.float32)
 
     weight_dict = {k.W_i_a: W_i_a, k.W_i_b: W_i_b,
                    k.W_h_mask: W_h_mask, k.W_h: W_h,
+                   k.W_h_z: W_h_z, k.W_h_r: W_h_r,
                    k.W_h_aa: W_h_aa, k.W_h_ba: W_h_ba, k.W_h_ab_bb: W_h_ab_bb, k.W_b: W_b,
                    k.W_out: W_out}
 
     if fix_weights:
-        trainable_list = [W_i_b, W_h_ba, W_h_ab_bb]
+        trainable_list = [W_i_b, W_h_ba, W_h_ab_bb, W_h_z, W_h_r]
     else:
-        trainable_list = [W_i_b, W_h_aa, W_h_ba, W_h_ab_bb]
+        trainable_list = [W_i_b, W_h_aa, W_h_ba, W_h_ab_bb, W_h_z, W_h_r]
 
-    plot_keys = [k.W_i_a, k.W_i_b, k.W_h, k.W_h_mask, k.W_out, k.W_b]
+    plot_keys = [k.W_i_a, k.W_i_b, k.W_h, k.W_h_mask, k.W_out, k.W_b, k.W_h_z, k.W_h_r]
     plot_dict = {key: weight_dict[key] for key in plot_keys}
     return k, weight_dict, trainable_list, plot_dict
 
@@ -91,10 +95,21 @@ def rnn_non_stationary(weight_dict, k, h_prev, input, name, opts):
     in_b = tf.matmul(input[:,state_size:], W_i_b)
     a_in = tf.concat([in_a, in_b], axis= 1)
 
+    W_h = tf.multiply(W_h, W_h_mask)
+    # regular rnn
     W_h_masked = tf.multiply(W_h, W_h_mask)
     a_hidden = tf.matmul(h_prev, W_h_masked)
-
     out = tf.tanh(W_b + a_in + a_hidden, name='time_{}'.format(name))
+
+    # #gru
+    # W_h_z = weight_dict[k.W_h_z]
+    # W_h_r = weight_dict[k.W_h_r]
+    # W_h_z = tf.multiply(W_h_z, W_h_mask)
+    # W_h_r = tf.multiply(W_h_r, W_h_mask)
+    # z = tf.sigmoid(a_in + tf.matmul(h_prev, W_h_z))
+    # r = tf.sigmoid(a_in + tf.matmul(h_prev, W_h_r))
+    # hprime = tf.tanh(a_in + tf.multiply(tf.matmul(h_prev, W_h), r) + W_b)
+    # out = tf.add(tf.multiply((1-z), h_prev), tf.multiply(z, hprime), name='time_{}'.format(name))
     return out
 
 def rnn_stationary(weight_dict, k, h_prev, input, name, opts):
