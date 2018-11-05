@@ -5,13 +5,6 @@ import numpy as np
 import os
 import config
 
-def make_input(x, y, batch_size):
-    data = tf.data.Dataset.from_tensor_slices((x, y))
-    data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
-    train_iter = data.make_initializable_iterator()
-    next_element = train_iter.get_next()
-    return train_iter, next_element
-
 def sort_weights(mat, axis, arg_pos= 1):
     if arg_pos:
         temp = np.square(mat * (mat > 0))

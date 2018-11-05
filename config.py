@@ -23,7 +23,7 @@ class stationary_model_config(stationary_input_config):
         super(stationary_model_config, self).__init__()
         self.stationary = True
         self.rnn_size = 60
-        self.epoch = int(2e4 + 1)
+        self.epoch = 200
         self.batch_size = 5
         self.test_batch_size = 5
         self.learning_rate = .001
@@ -53,7 +53,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.stationary = False
         self.rnn_size = 60
 
-        self.epoch = int(2e4 + 1)
+        self.epoch = 100
         self.batch_size = 5
         self.test_batch_size = 5
         self.learning_rate = .001

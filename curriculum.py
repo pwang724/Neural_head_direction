@@ -88,7 +88,7 @@ if __name__ == '__main__':
                     rnn = train.RNN(sess, c)
                     sess.run(tf.global_variables_initializer())
                     X, Y = inputs.create_inputs(c)
-                    rnn.run_training(X, Y, c)
+                    rnn.train(X, Y, c)
                     # e = c.test_batch_size
                     # rnn.run_test(X[:e, :, :], Y[:e, :, :], c)
 

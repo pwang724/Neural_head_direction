@@ -9,7 +9,7 @@ import time
 import pickle as pkl
 
 import utils as utils
-import rnn as weights
+import rnn as rnn_helper
 import config
 import shutil
 
@@ -17,40 +17,50 @@ import shutil
 # np.random.seed(2)
 # tf.set_random_seed(2)
 
+def create_tf_dataset(x, y, batch_size):
+    data = tf.data.Dataset.from_tensor_slices((x, y))
+    data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
+    train_iter = data.make_initializable_iterator()
+    next_element = train_iter.get_next()
+    return train_iter, next_element
+
+def create_placeholders(opts):
+    stationary = opts.stationary
+    time_steps = opts.time_steps
+    state_size = opts.state_size
+    if stationary:
+        x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
+    else:
+        velocity_size = opts.velocity_max * 2
+        x = tf.placeholder(tf.float32, [None, time_steps, state_size + velocity_size],
+                           name='input_placeholder')
+    y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
+    return x, y
 
 class RNN:
     """An RNN made to model 1D attractor network"""
-    def __init__(self, sess, opts):
+    def __init__(self, x, y, opts):
         stationary = opts.stationary
-        time_steps = opts.time_steps
         state_size = opts.state_size
         rnn_size = opts.rnn_size
+        batch_size = opts.batch_size
 
         learning_rate = opts.learning_rate
         time_loss_start = opts.time_loss_start
         time_loss_end= opts.time_loss_end
 
-        self.sess = sess
-        self.batch_size = tf.placeholder(tf.int32, [], name='batch_size')
+        inputs_series = tf.unstack(x, axis=1)
+        labels_series = tf.unstack(y, axis=1)
+        self.x = x
+        self.y = y
         if stationary:
-            self.x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
+            self.k, self.weight_dict, trainable_list, self.plot_dict = rnn_helper.define_stationary_weights(opts)
+            rnn_func = rnn_helper.rnn_stationary
         else:
-            velocity_size = opts.velocity_max * 2
-            self.x = tf.placeholder(tf.float32, [None, time_steps, state_size + velocity_size],
-                                    name='input_placeholder')
+            self.k, self.weight_dict, trainable_list, self.plot_dict = rnn_helper.define_nonstationary_weights(opts)
+            rnn_func = rnn_helper.rnn_non_stationary
 
-        self.y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
-        inputs_series = tf.unstack(self.x, axis=1)
-        labels_series = tf.unstack(self.y, axis=1)
-
-        if stationary:
-            self.k, self.weight_dict, trainable_list, self.plot_dict = weights.define_stationary_weights(opts)
-            rnn_func = weights.rnn_stationary
-        else:
-            self.k, self.weight_dict, trainable_list, self.plot_dict = weights.define_nonstationary_weights(opts)
-            rnn_func = weights.rnn_non_stationary
-
-        init_state = tf.zeros(shape=[self.batch_size, rnn_size], dtype= tf.float32)
+        init_state = tf.zeros(shape=[batch_size, rnn_size], dtype= tf.float32)
         state_series = [init_state]
         for i, current_input in enumerate(inputs_series):
             next_state = rnn_func(self.weight_dict, self.k, state_series[-1], current_input, i, opts)
@@ -68,20 +78,20 @@ class RNN:
         W_h_ab = W_h[:, state_size:]
         W_h_ba = W_h[state_size:,:]
         weight_constant = 0
-        self.weight_loss = tf.reduce_mean(tf.square(W_h_ab)) + tf.reduce_mean(tf.square(W_h_ba))
+        self.weight_loss = weight_constant * (tf.reduce_mean(tf.square(W_h_ab)) + tf.reduce_mean(tf.square(W_h_ba)))
 
         rnn_activity = tf.stack(state_series, axis=1)
         extra_neurons_activity = rnn_activity[:,:,state_size:]
         activity_constant = .1
-        self.activity_loss = tf.reduce_mean(tf.square(extra_neurons_activity))
-        self.total_loss = self.xe_loss + weight_constant * self.weight_loss + activity_constant * self.activity_loss
+        self.activity_loss = activity_constant * tf.reduce_mean(tf.square(extra_neurons_activity))
+        self.total_loss = self.xe_loss + self.weight_loss + self.activity_loss
 
         optimizer= tf.train.AdamOptimizer(learning_rate)
         self.train_op = optimizer.minimize(self.total_loss, var_list= trainable_list)
         self.saver = tf.train.Saver()
 
 
-    def run_training(self, inputs, labels, opts):
+    def train(self, sess, opts):
         """
         :param inputs: n x t x d input matrix
         :param labels: n x t x d label matrix
@@ -91,65 +101,59 @@ class RNN:
         save_path = opts.save_path
         file_name = opts.file_name
         stationary = opts.stationary
+        n_batch_per_epoch = opts.n_input // opts.batch_size
 
         tf_name = os.path.join(save_path, file_name)
         if opts.load_checkpoint:
-            self.saver.restore(self.sess, tf_name)
+            self.saver.restore(sess, tf_name)
         else:
             if stationary:
-                weights.initialize_stationary_weights(self.sess, opts, self.weight_dict, self.k)
+                rnn_helper.initialize_stationary_weights(sess, opts, self.weight_dict, self.k)
             else:
-                weights.initialize_nonstationary_weights(self.sess, opts, self.weight_dict, self.k)
+                rnn_helper.initialize_nonstationary_weights(sess, opts, self.weight_dict, self.k)
             if not os.path.exists(save_path):
                 os.makedirs(save_path)
 
-        train_iter, next_element = utils.make_input(self.x, self.y, opts.batch_size)
-        self.sess.run(train_iter.initializer, feed_dict={self.x: inputs, self.y: labels})
-
+        cur_loss, xe_loss, weight_loss, activity_loss = 0, 0, 0, 0
         loss_list, xe_loss_list, activity_loss_list, weight_loss_list, logits = [], [], [], [], []
         for ep in range(n_epoch):
-            cur_inputs, cur_labels = self.sess.run(next_element)
-            feed_dict = {self.x: cur_inputs, self.y: cur_labels, self.batch_size: opts.batch_size}
-            logits, cur_loss, xe_loss, weight_loss, activity_loss, _ = self.sess.run(
-                [self.logits, self.total_loss,
-                 self.xe_loss, self.weight_loss, self.activity_loss, self.train_op],
-                feed_dict=feed_dict)
+            for b in range(n_batch_per_epoch):
+                logits, cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
+                    [self.logits, self.total_loss,
+                     self.xe_loss, self.weight_loss, self.activity_loss, self.train_op])
 
-            if ep % 100 == 0:
+            if (ep % 5 == 0 and ep>0):
                 loss_list.append(cur_loss)
                 xe_loss_list.append(xe_loss)
                 activity_loss_list.append(activity_loss)
                 weight_loss_list.append(weight_loss)
                 print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
                       % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
-            if (ep % 20000 == 0) and (ep >0):
+            if (ep % 50 == 0) and (ep >0):
                 ep_path = utils.make_modified_path(save_path)
                 epoch_tf_name = os.path.join(ep_path, file_name)
 
                 utils.save_parameters(ep_path, opts)
-                weights.save_weights(self.sess, self.weight_dict, epoch_tf_name)
-                self.saver.save(self.sess, epoch_tf_name)
+                rnn_helper.save_weights(sess, self.weight_dict, epoch_tf_name)
+                self.saver.save(sess, epoch_tf_name)
 
                 loss_name = os.path.join(ep_path, 'loss.png')
                 loss_title = ['Loss','xe loss','activity loss','weight loss']
                 losses = [loss_list, xe_loss_list, activity_loss_list, weight_loss_list]
                 utils.pretty_plot(zip(loss_title, losses), col=2, row=2, save_name= loss_name)
-
-                e = opts.test_batch_size
-                self.run_test(inputs[:e, :, :], labels[:e, :, :], opts, restore= False, save_path= ep_path)
+                self.test(sess, opts, restore= False, save_path= ep_path)
 
         #save latest
         utils.save_parameters(save_path, opts)
-        weights.save_weights(self.sess, self.weight_dict, tf_name)
-        self.saver.save(self.sess, tf_name)
+        rnn_helper.save_weights(sess, self.weight_dict, tf_name)
+        self.saver.save(sess, tf_name)
         loss_name = os.path.join(save_path, 'loss.png')
         loss_title = ['Loss', 'xe loss', 'activity loss', 'weight loss']
         losses = [loss_list, xe_loss_list, activity_loss_list, weight_loss_list]
         utils.pretty_plot(zip(loss_title, losses), col=2, row=2, save_name=loss_name)
-        e = opts.test_batch_size
-        self.run_test(inputs[:e, :, :], labels[:e, :, :], opts, restore=False, save_path=save_path)
+        self.test(sess, opts, restore=False, save_path=save_path)
 
-    def run_test(self, inputs, labels, opts, restore = True, save_path = None):
+    def test(self, sess, opts, restore = True, save_path = None):
         """Visualization of trained network."""
         k = self.k
         stationary = opts.stationary
@@ -160,13 +164,11 @@ class RNN:
         if restore:
                 file_name = opts.file_name
                 checkpoint = os.path.join('./', save_path, file_name)
-                self.saver.restore(self.sess, checkpoint)
+                self.saver.restore(sess, checkpoint)
 
-        batch_size = opts.test_batch_size
-        feed_dict = {self.x: inputs, self.y: labels, self.batch_size: batch_size}
-        states, predictions, total_loss = \
-            self.sess.run([self.states, self.predictions, self.total_loss], feed_dict=feed_dict)
-        plot_dict = {k: self.sess.run(v) for k, v in self.plot_dict.items()}
+        states, predictions, total_loss, labels = \
+            sess.run([self.states, self.predictions, self.total_loss, self.y])
+        plot_dict = {k: sess.run(v) for k, v in self.plot_dict.items()}
 
         #plot sorted_weights
         W_h = plot_dict[k.W_h]
@@ -215,7 +217,7 @@ class RNN:
         utils.pretty_image(zip(titles, data), col=2, row=3, save_name=plot_name)
 
         #plot activity
-        rr = inputs.shape[0]
+        rr = opts.batch_size
         tup = []
         for i in range(rr):
             cur_state = np.array([s[i] for s in states])
@@ -243,50 +245,21 @@ class RNN:
         utils.pretty_image(plot_dict.items(), col= 2, row=3, save_name= plot_name)
 
 if __name__ == '__main__':
-    st_input_opts = config.stationary_input_config
-    st_model_opts = config.stationary_model_config
-    non_st_input_opts = config.non_stationary_input_config
-    non_st_model_opts = config.non_stationary_model_config
+    st_model_opts = config.stationary_model_config()
+    non_st_model_opts = config.non_stationary_model_config()
+    opts = st_model_opts
 
-    # input_opts = st_input_opts
-    # model_opts = st_model_opts
-    # with tf.Session() as sess:
-        ## Note that the loss can never be zero, as the first input can never produce the right output when the input
-        ## weights are the identity matrix.
 
-        # rnn = RNN(sess, model_opts)
-        # sess.run(tf.global_variables_initializer())
-        # X, Y, _ = inputs.create_inputs(input_opts)
-        #
-        # run = True
-        # if run:
-        #     rnn.run_training(X, Y, model_opts)
-        #
-        # test = True
-        # if test:
-        #     e = model_opts.test_batch_size
-        #     rnn.run_test(X[:e, :, :], Y[:e, :, :], model_opts)
-        #     plt.show(block=False)
-
-    input_opts = non_st_input_opts()
-    model_opts = non_st_model_opts()
+    X, Y = inputs.create_inputs(opts)
+    X_pl, Y_pl = create_placeholders(opts)
+    train_iter, next_element = create_tf_dataset(X_pl, Y_pl, opts.batch_size)
+    rnn = RNN(next_element[0], next_element[1], opts)
 
     with tf.Session() as sess:
-        ### Note that the loss can never be zero, as the first input can never produce the right output when the input
-        ### weights are the identity matrix.
-
-        rnn = RNN(sess, model_opts)
         sess.run(tf.global_variables_initializer())
-        X, Y = inputs.create_inputs(input_opts)
+        sess.run(train_iter.initializer, feed_dict={X_pl: X, Y_pl: Y})
+        rnn.train(sess, opts)
 
-        run = False
-        if run:
-            rnn.run_training(X, Y, model_opts)
-
-        test = True
-        if test:
-            e = model_opts.test_batch_size
-            rnn.run_test(X[:e, :, :], Y[:e, :, :], model_opts)
 
 
 

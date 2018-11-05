@@ -135,7 +135,7 @@ def create_inputs(opts):
         noise[noise_mask < noise_density] *= 0  # take density % of noise
         input += + noise
 
-    return input, labels
+    return input.astype(np.float32), labels.astype(np.float32)
 
 
 if __name__ == '__main__':
