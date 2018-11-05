@@ -61,7 +61,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.time_loss_end = 50
 
         self.load_weights = True #load pre-trained weights using stationary input
-        self.fix_weights = True
+        self.fix_weights = False
         self.dir_weights = './test/stationary/tf.pkl'
 
         self.load_checkpoint = True #load checkpoint, overrides load_weights

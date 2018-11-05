@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
 import config
-import noise
 
 # set seed for reproducibility
 # np.random.seed(2)
