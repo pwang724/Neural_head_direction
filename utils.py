@@ -35,7 +35,7 @@ def pretty_image(tup, col, row, save_name):
         if t != '':
             ax[r, c].set_title(t)
         ax[r, c].axis('off')
-        ax[r, c].axis('equal')
+        ax[r, c].axis('tight')
         c += 1
         if c >= col:
             r += 1
@@ -57,27 +57,3 @@ def pretty_plot(tup, col, row, save_name):
             r += 1
             c = 0
     fig.savefig(save_name, bbox_inches='tight', figsize= (14,10), dpi=300)
-
-def make_modified_path(name):
-    n = 0
-    modified_path = name + '_' + format(n, '02d')
-    while (os.path.exists(modified_path)):
-        n += 1
-        modified_path = os.path.join(name + '_' + format(n, '02d'))
-    os.makedirs(modified_path)
-    return modified_path
-
-def save_parameters(path, opts):
-    save_name = os.path.join(path, 'parameters.txt')
-    super = config.shared_input_config
-    super_dict = super.__dict__
-    cur_dict = opts.__dict__
-    super_dict = {k:v for k, v in super_dict.items() if k[:2] != '__'}
-    cur_dict = {k:v for k, v in cur_dict.items() if k[:2] != '__'}
-
-    with open(save_name, 'w') as f:
-        for k, v in super_dict.items():
-            f.write('%s: %s \n' %(k, v))
-        for k, v in cur_dict.items():
-            f.write('%s: %s \n' % (k, v))
-    pass

@@ -1,17 +1,14 @@
-import argparse
 import tensorflow as tf
 import numpy as np
 import inputs
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-import time
 import pickle as pkl
 
 import utils as utils
 import rnn as rnn_helper
 import config
-import shutil
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -22,7 +19,8 @@ def create_tf_dataset(x, y, batch_size):
     data = data.shuffle(int(1E6)).batch(tf.cast(batch_size, tf.int64)).repeat()
     train_iter = data.make_initializable_iterator()
     next_element = train_iter.get_next()
-    return train_iter, next_element
+    next_X, next_Y = next_element[0], next_element[1]
+    return train_iter, next_X, next_Y
 
 def create_placeholders(opts):
     stationary = opts.stationary
@@ -37,9 +35,46 @@ def create_placeholders(opts):
     y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
     return x, y
 
+def modify_path(path):
+    n = 0
+    path_mod = path + '_' + format(n, '02d')
+    while (os.path.exists(path_mod)):
+        n += 1
+        path_mod = os.path.join(path + '_' + format(n, '02d'))
+    os.makedirs(path_mod)
+    return path_mod
+
+def save_pickle(weight_dict, pathname):
+    sess = tf.get_default_session()
+    save_dict = {k: sess.run(v) for k, v in weight_dict.items()}
+    with open(pathname + ".pkl", 'wb') as f:
+        pkl.dump(save_dict, f)
+
+def save_parameters(path, opts):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    save_name = os.path.join(path, 'parameters.txt')
+    cur_dict = opts.__dict__
+    cur_dict = {k: v for k, v in cur_dict.items() if k[:2] != '__'}
+    with open(save_name, 'w') as f:
+        for k, v in cur_dict.items():
+            f.write('%s: %s \n' % (k, v))
+
 class RNN:
     """An RNN made to model 1D attractor network"""
-    def __init__(self, x, y, opts):
+    def __init__(self, opts):
+        self.opts = opts
+
+        X_pl, Y_pl = create_placeholders(opts)
+        train_iter, next_X, next_Y = create_tf_dataset(X_pl, Y_pl, opts.batch_size)
+        self.model(next_X, next_Y)
+        self.train_iter = train_iter
+        self.X_pl = X_pl
+        self.Y_pl = Y_pl
+        self.next_Y = next_Y
+
+    def model(self, x, y):
+        opts = self.opts
         stationary = opts.stationary
         state_size = opts.state_size
         rnn_size = opts.rnn_size
@@ -51,13 +86,11 @@ class RNN:
 
         inputs_series = tf.unstack(x, axis=1)
         labels_series = tf.unstack(y, axis=1)
-        self.x = x
-        self.y = y
         if stationary:
-            self.k, self.weight_dict, trainable_list, self.plot_dict = rnn_helper.define_stationary_weights(opts)
+            self.k, self.weight_dict, trainable_list, self.plot_keys = rnn_helper.define_stationary_weights(opts)
             rnn_func = rnn_helper.rnn_stationary
         else:
-            self.k, self.weight_dict, trainable_list, self.plot_dict = rnn_helper.define_nonstationary_weights(opts)
+            self.k, self.weight_dict, trainable_list, self.plot_keys = rnn_helper.define_nonstationary_weights(opts)
             rnn_func = rnn_helper.rnn_non_stationary
 
         init_state = tf.zeros(shape=[batch_size, rnn_size], dtype= tf.float32)
@@ -83,7 +116,7 @@ class RNN:
         rnn_activity = tf.stack(state_series, axis=1)
         extra_neurons_activity = rnn_activity[:,:,state_size:]
         activity_constant = .1
-        self.activity_loss = activity_constant * tf.reduce_mean(tf.square(extra_neurons_activity))
+        self.activity_loss = activity_constant * tf.reduce_mean(extra_neurons_activity)
         self.total_loss = self.xe_loss + self.weight_loss + self.activity_loss
 
         optimizer= tf.train.AdamOptimizer(learning_rate)
@@ -91,15 +124,18 @@ class RNN:
         self.saver = tf.train.Saver()
 
 
-    def train(self, sess, opts):
+    def train(self, opts):
         """
         :param inputs: n x t x d input matrix
         :param labels: n x t x d label matrix
         :return:
         """
+        sess = tf.get_default_session()
         n_epoch = opts.epoch
         save_path = opts.save_path
+        image_folder = opts.image_folder
         file_name = opts.file_name
+        data_name = opts.data_name
         stationary = opts.stationary
         n_batch_per_epoch = opts.n_input // opts.batch_size
 
@@ -111,138 +147,55 @@ class RNN:
                 rnn_helper.initialize_stationary_weights(sess, opts, self.weight_dict, self.k)
             else:
                 rnn_helper.initialize_nonstationary_weights(sess, opts, self.weight_dict, self.k)
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
 
         cur_loss, xe_loss, weight_loss, activity_loss = 0, 0, 0, 0
         loss_list, xe_loss_list, activity_loss_list, weight_loss_list, logits = [], [], [], [], []
         for ep in range(n_epoch):
             for b in range(n_batch_per_epoch):
-                logits, cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
-                    [self.logits, self.total_loss,
-                     self.xe_loss, self.weight_loss, self.activity_loss, self.train_op])
+                cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
+                    [self.total_loss, self.xe_loss, self.weight_loss, self.activity_loss, self.train_op])
 
-            if (ep % 5 == 0 and ep>0):
+            if (ep % 2 == 0 and ep>0): #save to loss file
                 loss_list.append(cur_loss)
                 xe_loss_list.append(xe_loss)
                 activity_loss_list.append(activity_loss)
                 weight_loss_list.append(weight_loss)
+            if (ep % 5 == 0 and ep>0): #display in terminal
                 print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
                       % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
-            if (ep % 50 == 0) and (ep >0):
-                ep_path = utils.make_modified_path(save_path)
-                epoch_tf_name = os.path.join(ep_path, file_name)
-
-                utils.save_parameters(ep_path, opts)
-                rnn_helper.save_weights(sess, self.weight_dict, epoch_tf_name)
+            if (ep % 50 == 0) and (ep >0): #save files
+                # save parameters, save weights, save some test data, save model ckpt
+                epoch_path = modify_path(save_path)
+                epoch_tf_name = os.path.join(epoch_path, file_name)
+                save_parameters(epoch_path, opts)
+                save_pickle(self.weight_dict, epoch_tf_name)
+                data = {'states': self.states, 'predictions': self.predictions,
+                        'labels': self.next_Y}
+                save_pickle(data, os.path.join(epoch_path, data_name))
                 self.saver.save(sess, epoch_tf_name)
 
-                loss_name = os.path.join(ep_path, 'loss.png')
+                image_path = os.path.join(epoch_path, image_folder)
+                os.makedirs(image_path)
+                loss_name = os.path.join(image_path, 'loss.png')
                 loss_title = ['Loss','xe loss','activity loss','weight loss']
                 losses = [loss_list, xe_loss_list, activity_loss_list, weight_loss_list]
                 utils.pretty_plot(zip(loss_title, losses), col=2, row=2, save_name= loss_name)
-                self.test(sess, opts, restore= False, save_path= ep_path)
 
         #save latest
-        utils.save_parameters(save_path, opts)
-        rnn_helper.save_weights(sess, self.weight_dict, tf_name)
+        save_parameters(save_path, opts)
+        save_pickle(self.weight_dict, tf_name)
+        data = {'states': self.states, 'predictions': self.predictions,
+                'labels': self.next_Y}
+        save_pickle(data, os.path.join(save_path, data_name))
         self.saver.save(sess, tf_name)
-        loss_name = os.path.join(save_path, 'loss.png')
+
+        image_path = os.path.join(save_path, image_folder)
+        os.makedirs(image_path)
+        loss_name = os.path.join(image_path, 'loss.png')
         loss_title = ['Loss', 'xe loss', 'activity loss', 'weight loss']
         losses = [loss_list, xe_loss_list, activity_loss_list, weight_loss_list]
         utils.pretty_plot(zip(loss_title, losses), col=2, row=2, save_name=loss_name)
-        self.test(sess, opts, restore=False, save_path=save_path)
-
-    def test(self, sess, opts, restore = True, save_path = None):
-        """Visualization of trained network."""
-        k = self.k
-        stationary = opts.stationary
-        state_size = opts.state_size
-
-        if save_path is None:
-            save_path = opts.save_path
-        if restore:
-                file_name = opts.file_name
-                checkpoint = os.path.join('./', save_path, file_name)
-                self.saver.restore(sess, checkpoint)
-
-        states, predictions, total_loss, labels = \
-            sess.run([self.states, self.predictions, self.total_loss, self.y])
-        plot_dict = {k: sess.run(v) for k, v in self.plot_dict.items()}
-
-        #plot sorted_weights
-        W_h = plot_dict[k.W_h]
-        W_h_ab = W_h[:state_size, state_size:]
-        W_h_ba = W_h[state_size:, :state_size]
-
-        if stationary == 2:
-            # apply left/right sort
-            W_i_b = plot_dict[k.W_i_b]
-            diff = W_i_b[0,:] - W_i_b[1,:]
-            sort_ix = np.argsort(diff)
-            W_h_ab_sorted = W_h_ab[:,sort_ix]
-            W_h_ba_sorted = W_h_ba[sort_ix,:]
-            W_i_b_sorted = W_i_b[:,sort_ix]
-
-            #apply sort to each one
-            diff = W_i_b_sorted[0,:]-W_i_b_sorted[1,:]
-            split_ix = np.argmax(diff>0)
-            left_sort_ix, _ = utils.sort_weights(W_h_ba_sorted[:split_ix,:], axis= 1, arg_pos= 1)
-            right_sort_ix, _ = utils.sort_weights(W_h_ba_sorted[split_ix:,:], axis= 1, arg_pos= 1)
-            # left_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:,:split_ix], axis= 0, arg_pos= 1)
-            # right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:,split_ix:], axis= 0, arg_pos= 1)
-            sort_ix = np.hstack((left_sort_ix, right_sort_ix+split_ix))
-            W_h_ab_sorted = W_h_ab_sorted[:,sort_ix]
-            W_h_ba_sorted = W_h_ba_sorted[sort_ix,:]
-            W_i_b_sorted = W_i_b_sorted[:,sort_ix]
-
-            # sort_ix, W_h_ba_sorted = utils.sort_weights(W_h_ba, axis=1, arg_pos=1)
-            # full_sort_ix = sort_ix + state_size
-            # W_h_sorted = np.copy(W_h)
-            # W_h_sorted[state_size:, :] = W_h_sorted[full_sort_ix, :]
-            # W_h_sorted[:, state_size:] = W_h_sorted[:, full_sort_ix]
-
-            data = [W_h_ab, W_h_ab_sorted, W_h_ba, W_h_ba_sorted, W_i_b, W_i_b_sorted]
-            titles = ['W_h_ab', 'W_h_ab_sorted', 'W_h_ba', 'W_h_ba_sorted', 'W_i_b', 'W_i_b_sorted']
-        else:
-            W_h_ab_sorted = np.copy(W_h_ab)
-            W_h_ba_sorted = np.copy(W_h_ba)
-            sort_ix, _ = utils.sort_weights(W_h_ba, axis=1, arg_pos=1)
-            W_h_ab_sorted = W_h_ab_sorted[:, sort_ix]
-            W_h_ba_sorted = W_h_ba_sorted[sort_ix, :]
-
-            data = [W_h_ab, W_h_ab_sorted, W_h_ba, W_h_ba_sorted]
-            titles = ['W_h_ab', 'W_h_ab_sorted', 'W_h_ba', 'W_h_ba_sorted']
-        plot_name = save_path + '/sorted_weights.png'
-        utils.pretty_image(zip(titles, data), col=2, row=3, save_name=plot_name)
-
-        #plot activity
-        rr = opts.batch_size
-        tup = []
-        for i in range(rr):
-            cur_state = np.array([s[i] for s in states])
-            cur_state_core = cur_state[:,:state_size]
-            cur_state_extra = cur_state[:,state_size:]
-            cur_pred = [p[i] for p in predictions]
-            cur_label = labels[i,:,:]
-            if i < 1:
-                tup.append(('Hidden Core', cur_state_core))
-                tup.append(('Hidden Extra', cur_state_extra[:,sort_ix]))
-                tup.append(('Prediction', cur_pred))
-                tup.append(('Label', cur_label))
-            else:
-                tup.append(('', cur_state_core))
-                tup.append(('', cur_state_extra[:,sort_ix]))
-                tup.append(('', cur_pred))
-                tup.append(('', cur_label))
-        plot_name = save_path + '/test_trials.png'
-        utils.pretty_image(tup, col=4, row=rr, save_name=plot_name)
-
-        #plot weights
-        W_b = plot_dict[k.W_b]
-        plot_dict[k.W_b] = W_b.reshape(1,-1)
-        plot_name = save_path + '/weights.png'
-        utils.pretty_image(plot_dict.items(), col= 2, row=3, save_name= plot_name)
+        # self.test(sess, opts, restore=False, save_path=save_path)
 
 if __name__ == '__main__':
     st_model_opts = config.stationary_model_config()
@@ -251,14 +204,12 @@ if __name__ == '__main__':
 
 
     X, Y = inputs.create_inputs(opts)
-    X_pl, Y_pl = create_placeholders(opts)
-    train_iter, next_element = create_tf_dataset(X_pl, Y_pl, opts.batch_size)
-    rnn = RNN(next_element[0], next_element[1], opts)
+    rnn = RNN(opts)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        sess.run(train_iter.initializer, feed_dict={X_pl: X, Y_pl: Y})
-        rnn.train(sess, opts)
+        sess.run(rnn.train_iter.initializer, feed_dict={rnn.X_pl: X, rnn.Y_pl: Y})
+        rnn.train(opts)
 
 
 

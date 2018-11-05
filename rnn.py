@@ -20,7 +20,7 @@ def define_nonstationary_weights(opts):
     # input weights
     support_size = rnn_size - state_size
     W_i_a = tf.constant(np.eye(state_size), dtype=tf.float32)
-    W_i_b = tf.get_variable('W_ab', shape=[velocity_size, support_size])
+    W_i_b = tf.get_variable(k.W_i_b, shape=[velocity_size, support_size])
 
     # output weights
     W_out_np = np.zeros((rnn_size, state_size))
@@ -50,8 +50,7 @@ def define_nonstationary_weights(opts):
         trainable_list = [W_i_b, W_h_aa, W_h_ba, W_h_ab_bb, W_h_z, W_h_r]
 
     plot_keys = [k.W_i_a, k.W_i_b, k.W_h, k.W_h_mask, k.W_out, k.W_b, k.W_h_z, k.W_h_r]
-    plot_dict = {key: weight_dict[key] for key in plot_keys}
-    return k, weight_dict, trainable_list, plot_dict
+    return k, weight_dict, trainable_list, plot_keys
 
 
 def define_stationary_weights(opts):
@@ -186,8 +185,3 @@ def initialize_stationary_weights(sess, opt, weight_dict, k):
 
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
     sess.run(tf.assign(W_h_tf, W_h))
-
-def save_weights(sess, weight_dict, path_name):
-    save_dict = {k: sess.run(v) for k, v in weight_dict.items()}
-    with open(path_name + ".pkl", 'wb') as f:
-        pkl.dump(save_dict, f)

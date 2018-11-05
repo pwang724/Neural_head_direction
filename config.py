@@ -1,4 +1,4 @@
-class shared_input_config(object):
+class shared_config(object):
     """config for input parameters that are shared
     between both stationary and non-stationary inputs"""
     def __init__(self):
@@ -10,7 +10,11 @@ class shared_input_config(object):
         self.noise_intensity = .3
         self.noise_density = .5
 
-class stationary_input_config(shared_input_config):
+        self.file_name = 'tf'
+        self.data_name = 'data'
+        self.image_folder = 'images'
+
+class stationary_input_config(shared_config):
     """config for stationary training"""
     def __init__(self):
         super(stationary_input_config, self).__init__()
@@ -23,17 +27,16 @@ class stationary_model_config(stationary_input_config):
         super(stationary_model_config, self).__init__()
         self.stationary = True
         self.rnn_size = 60
-        self.epoch = 200
+        self.epoch = 201
         self.batch_size = 5
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 5
         self.time_loss_end = 20
         self.save_path = './test/stationary'
-        self.file_name = 'tf'
         self.load_checkpoint = False
 
-class non_stationary_input_config(shared_input_config):
+class non_stationary_input_config(shared_config):
     """config for non-stationary training"""
     def __init__(self):
         super(non_stationary_input_config, self).__init__()
@@ -66,7 +69,6 @@ class non_stationary_model_config(non_stationary_input_config):
 
         self.load_checkpoint = True #load checkpoint, overrides load_weights
         self.save_path = './test/non_stationary'
-        self.file_name = 'tf'
 
 if __name__ == '__main__':
     a = non_stationary_model_config()
