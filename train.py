@@ -163,7 +163,7 @@ class RNN:
             if (ep % 5 == 0 and ep>0): #display in terminal
                 print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
                       % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
-            if (ep % 50 == 0) and (ep >0): #save files
+            if (ep % 100 == 0) and (ep >0): #save files
                 # save parameters, save weights, save some test data, save model ckpt
                 epoch_path = modify_path(save_path)
                 epoch_tf_name = os.path.join(epoch_path, file_name)
@@ -190,7 +190,8 @@ class RNN:
         self.saver.save(sess, tf_name)
 
         image_path = os.path.join(save_path, image_folder)
-        os.makedirs(image_path)
+        if not os.path.exists(image_path):
+            os.makedirs(image_path)
         loss_name = os.path.join(image_path, 'loss.png')
         loss_title = ['Loss', 'xe loss', 'activity loss', 'weight loss']
         losses = [loss_list, xe_loss_list, activity_loss_list, weight_loss_list]

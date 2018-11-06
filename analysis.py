@@ -53,8 +53,10 @@ def plot_weights(opts):
         weight_dict = pkl.load(f)
 
     weight_dict.pop('W_b', None)
+    weight_dict.pop('W_h_z',None)
+    weight_dict.pop('W_h_r',None)
     plot_name = os.path.join(save_path, image_folder, 'weights.png')
-    utils.pretty_image(weight_dict.items(), col=2, row=2, save_name=plot_name)
+    utils.pretty_image(weight_dict.items(), col=2, row=4, save_name=plot_name)
 
 
 def analyze_weights(opts):
@@ -119,7 +121,7 @@ if __name__ == '__main__':
     non_st_model_opts = config.non_stationary_model_config()
     opts = st_model_opts
 
-    d = './test'
+    d = './curriculum'
     dirs = [os.path.join(d, o) for o in os.listdir(d)
      if os.path.isdir(os.path.join(d, o))]
 

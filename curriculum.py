@@ -31,15 +31,15 @@ def curriculum():
     nonst_model_opts.velocity_max = 3
 
     first = copy.deepcopy(st_model_opts)
-    first.epoch = int(2e4+1)
+    first.epoch = int(101)
     first.load_checkpoint= False
 
     first_more = copy.deepcopy(st_model_opts)
-    first_more.epoch = int(2e4+1)
+    first_more.epoch = int(101)
     first_more.load_checkpoint= True
 
     second = copy.deepcopy(nonst_model_opts)
-    second.epoch = int(2e4 +1)
+    second.epoch = int(201)
     second.load_checkpoint = False
     second.load_weights = True
     second.time_steps = 25
@@ -47,7 +47,7 @@ def curriculum():
     second.velocity_use = [1]
 
     second_more = copy.deepcopy(nonst_model_opts)
-    second_more.epoch = int(2e4 + 1)
+    second_more.epoch = int(201)
     second_more.load_checkpoint = True
     second_more.time_steps = 25
     second_more.time_loss_end = 25
@@ -75,7 +75,7 @@ def curriculum():
     fourth.time_loss_end = 25
 
     # c= [first_more]
-    c = [second, second_more]
+    c = [first, first_more, second, second_more]
     return c
 
 if __name__ == '__main__':
@@ -83,12 +83,14 @@ if __name__ == '__main__':
         curriculum = curriculum()
         for i, c in enumerate(curriculum):
             with tf.Graph().as_default() as graph:
+                X, Y = inputs.create_inputs(c)
+                rnn = train.RNN(c)
                 with tf.Session() as sess:
                     print(c.__dict__)
-                    rnn = train.RNN(sess, c)
                     sess.run(tf.global_variables_initializer())
-                    X, Y = inputs.create_inputs(c)
-                    rnn.train(X, Y, c)
+                    sess.run(rnn.train_iter.initializer,
+                             feed_dict={rnn.X_pl: X, rnn.Y_pl: Y})
+                    rnn.train(c)
                     # e = c.test_batch_size
                     # rnn.run_test(X[:e, :, :], Y[:e, :, :], c)
 

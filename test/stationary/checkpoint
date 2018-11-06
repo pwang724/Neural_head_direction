@@ -1,6 +1,0 @@
-model_checkpoint_path: "tf"
-all_model_checkpoint_paths: "../stationary_00/tf"
-all_model_checkpoint_paths: "../stationary_01/tf"
-all_model_checkpoint_paths: "../stationary_02/tf"
-all_model_checkpoint_paths: "../stationary_03/tf"
-all_model_checkpoint_paths: "tf"

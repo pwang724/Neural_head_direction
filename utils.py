@@ -35,7 +35,7 @@ def pretty_image(tup, col, row, save_name):
         if t != '':
             ax[r, c].set_title(t)
         ax[r, c].axis('off')
-        ax[r, c].axis('tight')
+        ax[r, c].axis('image')
         c += 1
         if c >= col:
             r += 1
