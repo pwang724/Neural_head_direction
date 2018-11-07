@@ -17,7 +17,7 @@ def plot_activity(opts, sort_ix = None):
     states, predictions, labels = data_dict['states'], data_dict['predictions'], \
                                   data_dict['labels']
 
-    row = 3
+    row = 5
     tup = []
     for i in range(row):
         cur_state = np.array([s[i] for s in states])
@@ -43,6 +43,7 @@ def plot_activity(opts, sort_ix = None):
             tup.append(('', cur_label))
     plot_name = os.path.join(save_path, image_folder, 'activity.png')
     utils.pretty_image(tup, col=4, row=row, save_name=plot_name)
+
 
 def plot_weights(opts):
     stationary = opts.stationary

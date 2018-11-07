@@ -1,4 +1,2 @@
 model_checkpoint_path: "tf"
-all_model_checkpoint_paths: "../non_stationary_02/tf"
-all_model_checkpoint_paths: "../non_stationary_03/tf"
 all_model_checkpoint_paths: "tf"

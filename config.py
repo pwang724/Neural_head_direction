@@ -28,7 +28,7 @@ class stationary_model_config(stationary_input_config):
         self.stationary = True
         self.rnn_size = 60
         self.epoch = 201
-        self.batch_size = 5
+        self.batch_size = 10
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 5
@@ -57,7 +57,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.rnn_size = 60
 
         self.epoch = 100
-        self.batch_size = 5
+        self.batch_size = 10
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 1

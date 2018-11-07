@@ -18,7 +18,7 @@ def arg_parser():
 def curriculum():
     parser = arg_parser()
     opts = parser.parse_args()
-    rnn_size = 50
+    rnn_size = 60
 
     st_model_opts = config.stationary_model_config()
     st_model_opts.save_path = opts.stationary_path
@@ -47,11 +47,12 @@ def curriculum():
     second.velocity_use = [1]
 
     second_more = copy.deepcopy(nonst_model_opts)
-    second_more.epoch = int(201)
+    second_more.epoch = int(1)
     second_more.load_checkpoint = True
     second_more.time_steps = 25
     second_more.time_loss_end = 25
     second_more.velocity_use = [1]
+    second_more.batch_size= 20
     
     third = copy.deepcopy(nonst_model_opts)
     third.epoch = int(4e4 + 1)
@@ -74,8 +75,8 @@ def curriculum():
     fourth.time_steps = 25
     fourth.time_loss_end = 25
 
-    # c= [first_more]
-    c = [first, first_more, second, second_more]
+    # c= [first, first_more]
+    c = [second_more]
     return c
 
 if __name__ == '__main__':

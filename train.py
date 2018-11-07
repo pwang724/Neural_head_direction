@@ -44,9 +44,14 @@ def modify_path(path):
     os.makedirs(path_mod)
     return path_mod
 
-def save_pickle(weight_dict, pathname):
+def save_pickle(weight_dict, pathname, feed_dict):
     sess = tf.get_default_session()
-    save_dict = {k: sess.run(v) for k, v in weight_dict.items()}
+    save_dict = {k: sess.run(v, feed_dict= feed_dict) for k,
+                                                     v in weight_dict.items()}
+    l = list(feed_dict.values())
+    if feed_dict:
+        save_dict['inputs'] = l[0]
+        save_dict['labels'] = l[1]
     with open(pathname + ".pkl", 'wb') as f:
         pkl.dump(save_dict, f)
 
@@ -67,10 +72,11 @@ class RNN:
 
         X_pl, Y_pl = create_placeholders(opts)
         train_iter, next_X, next_Y = create_tf_dataset(X_pl, Y_pl, opts.batch_size)
-        self.model(next_X, next_Y)
+        self.model(X_pl, Y_pl)
         self.train_iter = train_iter
         self.X_pl = X_pl
         self.Y_pl = Y_pl
+        self.next_X = next_X
         self.next_Y = next_Y
 
     def model(self, x, y):
@@ -152,8 +158,12 @@ class RNN:
         loss_list, xe_loss_list, activity_loss_list, weight_loss_list, logits = [], [], [], [], []
         for ep in range(n_epoch):
             for b in range(n_batch_per_epoch):
+                next_X, next_Y = sess.run([self.next_X, self.next_Y])
+                feed_dict = {self.X_pl: next_X, self.Y_pl: next_Y}
                 cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
-                    [self.total_loss, self.xe_loss, self.weight_loss, self.activity_loss, self.train_op])
+                    [self.total_loss, self.xe_loss, self.weight_loss,
+                     self.activity_loss, self.train_op],
+                feed_dict= feed_dict)
 
             if (ep % 2 == 0 and ep>0): #save to loss file
                 loss_list.append(cur_loss)
@@ -168,10 +178,12 @@ class RNN:
                 epoch_path = modify_path(save_path)
                 epoch_tf_name = os.path.join(epoch_path, file_name)
                 save_parameters(epoch_path, opts)
-                save_pickle(self.weight_dict, epoch_tf_name)
-                data = {'states': self.states, 'predictions': self.predictions,
-                        'labels': self.next_Y}
-                save_pickle(data, os.path.join(epoch_path, data_name))
+                save_pickle(self.weight_dict, epoch_tf_name, {})
+                data = {'states': self.states, 'predictions': self.predictions}
+                next_X, next_Y = sess.run([self.next_X, self.next_Y])
+                feed_dict = {self.X_pl: next_X, self.Y_pl: next_Y}
+                save_pickle(data, os.path.join(epoch_path, data_name),
+                            feed_dict)
                 self.saver.save(sess, epoch_tf_name)
 
                 image_path = os.path.join(epoch_path, image_folder)
@@ -183,10 +195,11 @@ class RNN:
 
         #save latest
         save_parameters(save_path, opts)
-        save_pickle(self.weight_dict, tf_name)
-        data = {'states': self.states, 'predictions': self.predictions,
-                'labels': self.next_Y}
-        save_pickle(data, os.path.join(save_path, data_name))
+        save_pickle(self.weight_dict, tf_name, {})
+        data = {'states': self.states, 'predictions': self.predictions}
+        next_X, next_Y = sess.run([self.next_X, self.next_Y])
+        feed_dict = {self.X_pl: next_X, self.Y_pl: next_Y}
+        save_pickle(data, os.path.join(save_path, data_name), feed_dict)
         self.saver.save(sess, tf_name)
 
         image_path = os.path.join(save_path, image_folder)

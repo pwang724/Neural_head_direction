@@ -41,6 +41,7 @@ def pretty_image(tup, col, row, save_name):
             r += 1
             c = 0
     fig.savefig(save_name, bbox_inches='tight', figsize = (14,10), dpi=300)
+    plt.close()
 
 def pretty_plot(tup, col, row, save_name):
     """input: list of tuples
@@ -57,3 +58,4 @@ def pretty_plot(tup, col, row, save_name):
             r += 1
             c = 0
     fig.savefig(save_name, bbox_inches='tight', figsize= (14,10), dpi=300)
+    plt.close()
