@@ -52,7 +52,7 @@ def curriculum():
     second_more.time_steps = 25
     second_more.time_loss_end = 25
     second_more.velocity_use = [1]
-    second_more.batch_size= 20
+    second_more.batch_size= 40
     
     third = copy.deepcopy(nonst_model_opts)
     third.epoch = int(4e4 + 1)

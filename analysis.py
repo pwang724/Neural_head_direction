@@ -17,7 +17,7 @@ def plot_activity(opts, sort_ix = None):
     states, predictions, labels = data_dict['states'], data_dict['predictions'], \
                                   data_dict['labels']
 
-    row = 5
+    row = 10
     tup = []
     for i in range(row):
         cur_state = np.array([s[i] for s in states])

@@ -18,7 +18,7 @@ time_steps: 25
 stationary: False 
 rnn_size: 60 
 epoch: 1 
-batch_size: 20 
+batch_size: 40 
 test_batch_size: 5 
 learning_rate: 0.001 
 time_loss_start: 1 
