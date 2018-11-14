@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
 import config
+from utils import adjust
+import os
 
 # set seed for reproducibility
 # np.random.seed(2)
@@ -136,6 +138,55 @@ def create_inputs(opts):
 
     return input.astype(np.float32), labels.astype(np.float32)
 
+def plot_moving(inputs, labels, opts):
+    rc = (2,3)
+    fig, ax = plt.subplots(rc[0], rc[1])
+    state = [x[:,:opts.state_size] for x in inputs[:rc[0]]]
+    extra = [x[:,opts.state_size+2:opts.state_size+4] for x in inputs[:rc[0]]]
+    labels = labels[:rc[0]]
+
+    i=0
+    for batch in zip(state, extra, labels):
+        for d in batch:
+            plot_ix = np.unravel_index(i, rc)
+            cur_ax = ax[plot_ix]
+            adjust(cur_ax)
+            plt.sca(cur_ax)
+            plt.imshow(d, cmap='magma', vmin=0, vmax=.3)
+            if i%3 !=1:
+                plt.xticks([0, 19])
+            else:
+                plt.xticks([])
+            plt.yticks([0, 49])
+            cb = plt.colorbar()
+            cb.set_ticks([0, .3])
+            i+=1
+    path = os.path.join('lab meeting', 'input_non_stationary')
+    plt.savefig(path + '.png', dpi=300)
+
+def plot_stationary(inputs, labels, opts):
+    rc = (2,2)
+    fig, ax = plt.subplots(rc[0], rc[1])
+    state = inputs[:rc[0]]
+    labels = labels[:rc[0]]
+    i=0
+    for batch in zip(state, labels):
+        for d in batch:
+            plot_ix = np.unravel_index(i, rc)
+            cur_ax = ax[plot_ix]
+            adjust(cur_ax)
+            plt.sca(cur_ax)
+            # cbarBoo = True if i %2==1 else True
+            plt.imshow(d, cmap='magma', vmin=0, vmax=.3)
+            plt.xticks([0, 19])
+            plt.yticks([0, 49])
+            cb = plt.colorbar()
+            cb.set_ticks([0, .3])
+            i+=1
+    path = os.path.join('lab meeting', 'input_stationary')
+    plt.savefig(path + '.png', dpi=300)
+
+
 
 if __name__ == '__main__':
     stationary = config.stationary_input_config()
@@ -146,17 +197,5 @@ if __name__ == '__main__':
 
     print(inputs.shape)
     print(labels.shape)
-
-    fig, ax = plt.subplots(nrows=1, ncols=2)
-    plt.axis('off')
-    ax[0].set_title('Input')
-    sns.heatmap(inputs[0], vmin =0, vmax = .5, cbar=False, ax = ax[0])
-    ax[0].yaxis.set_major_locator(ticker.MultipleLocator(5))
-    ax[0].yaxis.set_major_formatter(ticker.ScalarFormatter())
-
-    ax[1].set_title('Label')
-    sns.heatmap(labels[0], vmin=0, vmax=.5, cbar=True, ax = ax[1])
-    ax[1].yaxis.set_major_locator(ticker.MultipleLocator(5))
-    ax[1].yaxis.set_major_formatter(ticker.ScalarFormatter())
-
-    plt.show()
+    # plot_stationary(inputs,labels, opts)
+    plot_moving(inputs,labels, opts)

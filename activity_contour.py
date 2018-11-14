@@ -6,18 +6,19 @@ import config
 import pickle as pkl
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
+from analysis import sort_weights
 
 
 def get_activity(opts):
     state_size = opts.state_size
     save_path = opts.save_path
-    data_name = opts.data_name
+    activity_name = opts.activity_name
 
-    with open(os.path.join(save_path, data_name + '.pkl'), 'rb') as f:
+    with open(os.path.join(save_path, activity_name + '.pkl'), 'rb') as f:
         data_dict = pkl.load(f)
 
     states, predictions, labels = data_dict['states'], data_dict['predictions'], \
-                                  data_dict['labels']
+                                  data_dict['Y']
 
     noise_skip = 5
     states = np.stack(states, axis=1)  # examples x t x neurons, so each example is in axis 0
@@ -26,12 +27,17 @@ def get_activity(opts):
     predictions = predictions[:, 1+noise_skip:, :]
     labels = np.stack(labels, axis=0)
     labels = labels[:, noise_skip:, :]
-    n, t, d_s = states.shape
-    _, _, d_l = labels.shape
+    batch, time, n_rnn = states.shape
+    _, _, n_state = labels.shape
 
-    states = states.reshape(n * t, d_s)  # each neuron's activity is a column
-    pred = predictions.reshape(n * t, -1)
-    labels = labels.reshape(n * t, d_l)
+    # assert batch == opts.batch_size
+    # assert time == opts.time_steps
+    # assert n_rnn == opts.rnn_size
+    # assert n_state == opts.state_size
+
+    states = states.reshape(batch * time, n_rnn)  # each neuron's activity is a column
+    pred = predictions.reshape(batch * time, -1)
+    labels = labels.reshape(batch * time, n_state)
 
     # find the center of mass for each label
 
@@ -50,7 +56,7 @@ def get_activity(opts):
     vel[1:] = com[1:] - com[:-1]
     vel[vel > opts.velocity_max + .5] -= 20
     vel[vel < -(opts.velocity_max + .5)] += 20
-    vel[::t] *= 0  # velocity is zero at the start of each example
+    vel[::time] *= 0  # velocity is zero at the start of each example
 
     # find the COM for the neurons
     pred_norm = np.sum(labels, axis=1)
@@ -68,6 +74,9 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
     """
     Plot the activity of a neuron using data from all processed batches.
     """
+    sort_ix = sort_weights(opts)
+    activity[:,opts.state_size:] = activity[:,opts.state_size+sort_ix]
+
     x = np.arange(0, opts.state_size)
     # x = np.linspace(np.amin(points[:, 0]), np.amax(points[:, 0]))
     scale = 2 * np.pi / opts.state_size
@@ -88,6 +97,7 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
         nc, nr = 5, 8
         neurons = np.arange(opts.state_size, opts.rnn_size)  # extra neurons
 
+
     f_linear, ax_linear = plt.subplots(ncols=nc, nrows=nr)
     plt.suptitle('Linear Interpolated Data')
 
@@ -97,6 +107,7 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
         plt.sca(ax_linear[r, c])
         plt.title('Neuron {}'.format(n))
         plt.contourf(x, y, z_lin, cmap='RdBu_r')
+        plt.axis('off')
 
         # find the global centroid
         if np.nanmax(z_lin) <= 0:
@@ -111,7 +122,7 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
         com_rad = np.arctan2(sin_mean, cos_mean)
         com_x = (com_rad / scale) % 20
         com_y = np.sum(y_mesh * z_lin) / norm
-        plt.scatter(com_x, com_y, c='k')
+        # plt.scatter(com_x, com_y, c='k')
 
         c += 1
         if c == nc:
@@ -124,11 +135,7 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
 
 
 if __name__ == '__main__':
-    st_model_opts = config.stationary_model_config()
-    non_st_model_opts = config.non_stationary_model_config()
-    opts = non_st_model_opts
-
-    d = './curriculum'
+    d = './gold'
     dirs = [os.path.join(d, o) for o in os.listdir(d)
             if os.path.isdir(os.path.join(d, o))]
 
@@ -136,6 +143,7 @@ if __name__ == '__main__':
     activity = []
     labels = []
     for d in dirs:
+        opts = utils.load_parameters(d + '/parameters')
         opts.save_path = d
         p, act, lab = get_activity(opts)
         points.append(p)
