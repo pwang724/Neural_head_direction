@@ -159,16 +159,19 @@ def initialize_nonstationary_weights(sess, opts, weight_dict, k):
         W_b = W_b_tf.eval()
         W_b[:len(W_b_old)] = W_b_old
         sess.run(tf.assign(W_b_tf, W_b))
+        print('[!!!] Non-stationary weights initialized from ' + dir_weights)
     else:
         W_h_aa = W_h_aa_tf.eval()
         np.fill_diagonal(W_h_aa, 0)
         sess.run(tf.assign(W_h_aa_tf, W_h_aa))
+        print('[!!!] Non-stationary weights initialized from scratch')
 
     W_h_mask = W_h_mask_tf.eval()
     W_h_mask[:,:] = 1
     np.fill_diagonal(W_h_mask, 0)
     W_h_mask[state_size:,state_size:] = 0
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
+
 
 def initialize_stationary_weights(sess, opt, weight_dict, k):
     state_size = opt.state_size

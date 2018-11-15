@@ -6,7 +6,7 @@ import config
 import pickle as pkl
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
-from analysis import sort_weights
+from analysis import messy_weights
 
 
 def get_activity(opts):
@@ -74,7 +74,7 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
     """
     Plot the activity of a neuron using data from all processed batches.
     """
-    sort_ix = sort_weights(opts)
+    sort_ix = messy_weights(opts)
     activity[:,opts.state_size:] = activity[:,opts.state_size+sort_ix]
 
     x = np.arange(0, opts.state_size)

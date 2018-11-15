@@ -59,66 +59,65 @@ def train(opts):
     stationary = opts.stationary
     n_batch_per_epoch = opts.n_input // opts.batch_size
 
-    tf.reset_default_graph()
-    if not os.path.exists(opts.save_path):
-        os.makedirs(opts.save_path)
+    with tf.Graph().as_default() as graph:
+        if not os.path.exists(opts.save_path):
+            os.makedirs(opts.save_path)
 
-    X, Y = inputs.create_inputs(opts)
-    train_iter, next_element = create_tf_dataset(X, Y, opts.batch_size)
-    model = RNN(next_element[0], next_element[1], opts, training=True)
+        X, Y = inputs.create_inputs(opts)
+        train_iter, next_element = create_tf_dataset(X, Y, opts.batch_size)
+        model = RNN(next_element[0], next_element[1], opts, training=True)
 
-    logger = defaultdict(list)
+        logger = defaultdict(list)
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            sess.run(train_iter.initializer)
 
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        sess.run(tf.local_variables_initializer())
-        sess.run(train_iter.initializer)
-
-        if opts.load_checkpoint:
-            model.load()
-        else:
-            if stationary:
-                rnn_helper.initialize_stationary_weights(sess,
-                                                         opts, model.weight_dict, model.k)
+            if opts.load_checkpoint:
+                model.load()
             else:
-                rnn_helper.initialize_nonstationary_weights(sess,
-                                                            opts, model.weight_dict, model.k)
+                if stationary:
+                    rnn_helper.initialize_stationary_weights(sess,
+                                                             opts, model.weight_dict, model.k)
+                else:
+                    rnn_helper.initialize_nonstationary_weights(sess,
+                                                                opts, model.weight_dict, model.k)
 
-        for ep in range(n_epoch):
-            for b in range(n_batch_per_epoch):
-                cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
-                    [model.total_loss, model.xe_loss, model.weight_loss,
-                     model.activity_loss, model.train_op])
+            for ep in range(n_epoch):
+                for b in range(n_batch_per_epoch):
+                    cur_loss, xe_loss, weight_loss, activity_loss, _ = sess.run(
+                        [model.total_loss, model.xe_loss, model.weight_loss,
+                         model.activity_loss, model.train_op])
 
-            if (ep % 1 == 0 and ep>0): #save to loss file
-                logger['epoch'] = ep
-                logger['loss'].append(cur_loss)
-                logger['xe_loss'].append(xe_loss)
-                logger['activity_loss'].append(activity_loss)
-                logger['weight_loss'].append(weight_loss)
-            if (ep % 5 == 0 and ep>0): #display in terminal
-                print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
-                      % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
-            if (ep % 1000 == 0) and (ep >0): #save files
-                # save parameters, save weights, save some test data, save model ckpt
-                epoch_path = modify_path(save_path)
-                model.save(epoch_path)
-                utils.save_parameters(opts, os.path.join(epoch_path,
-                                                         opts.parameter_name))
-                model.save_weights(epoch_path)
-                model.save_activity(next_element[0], next_element[1],
-                                    epoch_path)
-                with open(os.path.join(save_path, opts.log_name + '.pkl'),
-                          'wb') as f:
-                    pkl.dump(logger,f)
+                if (ep % 1 == 0 and ep>0): #save to loss file
+                    logger['epoch'] = ep
+                    logger['loss'].append(cur_loss)
+                    logger['xe_loss'].append(xe_loss)
+                    logger['activity_loss'].append(activity_loss)
+                    logger['weight_loss'].append(weight_loss)
+                if (ep % 5 == 0 and ep>0): #display in terminal
+                    print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
+                          % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
+                if (ep % 1000 == 0) and (ep >0): #save files
+                    # save parameters, save weights, save some test data, save model ckpt
+                    epoch_path = modify_path(save_path)
+                    model.save(epoch_path)
+                    utils.save_parameters(opts, os.path.join(epoch_path,
+                                                             opts.parameter_name))
+                    model.save_weights(epoch_path)
+                    model.save_activity(next_element[0], next_element[1],
+                                        epoch_path)
+                    with open(os.path.join(save_path, opts.log_name + '.pkl'),
+                              'wb') as f:
+                        pkl.dump(logger,f)
 
-        #save latest
-        model.save()
-        utils.save_parameters(opts, os.path.join(save_path, opts.parameter_name))
-        model.save_weights()
-        model.save_activity(next_element[0], next_element[1])
-        with open(os.path.join(save_path, opts.log_name + '.pkl'), 'wb') as f:
-            pkl.dump(logger, f)
+            #save latest
+            model.save()
+            utils.save_parameters(opts, os.path.join(save_path, opts.parameter_name))
+            model.save_weights()
+            model.save_activity(next_element[0], next_element[1])
+            with open(os.path.join(save_path, opts.log_name + '.pkl'), 'wb') as f:
+                pkl.dump(logger, f)
 
 if __name__ == '__main__':
     st_model_opts = config.stationary_model_config()

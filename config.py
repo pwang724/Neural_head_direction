@@ -22,7 +22,7 @@ class stationary_input_config(shared_config):
     def __init__(self):
         super(stationary_input_config, self).__init__()
         self.n_input = 1000
-        self.time_steps = 50
+        self.time_steps = 25
         self.velocity = False
 
 class stationary_model_config(stationary_input_config):
@@ -31,11 +31,11 @@ class stationary_model_config(stationary_input_config):
         self.stationary = True
         self.rnn_size = 60
         self.epoch = 101
-        self.batch_size = 10
+        self.batch_size = 20
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 5
-        self.time_loss_end = 20
+        self.time_loss_end = 25
         self.save_path = './test/stationary'
         self.load_checkpoint = False
         self.weight_alpha = 1
@@ -49,7 +49,7 @@ class non_stationary_input_config(shared_config):
         self.velocity = True
         self.velocity_start = 5
         self.velocity_gap = 3
-        self.velocity_max = 3
+        self.velocity_max = 1
         self.velocity_size = self.velocity_max * 2
         self.velocity_use = [1]
         self.time_steps = 50
@@ -62,7 +62,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.rnn_size = 60
 
         self.epoch = 201
-        self.batch_size = 10
+        self.batch_size = 20
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 1

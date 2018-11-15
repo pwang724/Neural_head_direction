@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a4002b9d-acf3-4127-a4c4-23dde84d8b39" name="Default" comment="some cleanup, not finished">
+    <list default="true" id="a4002b9d-acf3-4127-a4c4-23dde84d8b39" name="Default" comment="pushed weights up">
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/activity.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/checkpoint" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/images/activity.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/images/weights.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/images/weights__.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/log.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.data-00000-of-00001" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.index" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/parameters.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/non_stationary/weight.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/activity.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/checkpoint" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/images/activity.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/images/weights.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/images/weights__.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/log.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.data-00000-of-00001" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.index" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/parameters.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gold_copy/stationary/weight.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lab_meeting_inputs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lab_meeting_weights.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/activity_contour.py" beforeDir="false" afterPath="$PROJECT_DIR$/activity_contour.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/curriculum.py" beforeDir="false" afterPath="$PROJECT_DIR$/curriculum.py" afterDir="false" />
@@ -17,8 +42,9 @@
       <change beforePath="$PROJECT_DIR$/curriculum/non_stationary/tf.index" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/curriculum/non_stationary/tf.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/curriculum/non_stationary/tf.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputs.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,43 +56,44 @@
     <session id="2044067143">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
-          <entry key="project.open.time.0" value="2" />
+          <entry key="project.closed" value="9" />
+          <entry key="project.open.time.0" value="4" />
           <entry key="project.open.time.1" value="1" />
-          <entry key="project.open.time.3" value="1" />
+          <entry key="project.open.time.3" value="3" />
           <entry key="project.open.time.31" value="1" />
-          <entry key="project.opened" value="5" />
+          <entry key="project.open.time.5" value="1" />
+          <entry key="project.opened" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="3358" />
-          <entry key="dummy" value="70" />
-          <entry key="py" value="22707" />
-          <entry key="txt" value="79" />
+          <entry key="Python Console" value="4986" />
+          <entry key="dummy" value="77" />
+          <entry key="py" value="32032" />
+          <entry key="txt" value="96" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="149" />
-          <entry key="Python" value="26065" />
+          <entry key="PLAIN_TEXT" value="173" />
+          <entry key="Python" value="37018" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="checkpoint" value="6" />
+          <entry key="checkpoint" value="8" />
           <entry key="lastfailed" value="1" />
-          <entry key="png" value="521" />
-          <entry key="py" value="62" />
+          <entry key="png" value="688" />
+          <entry key="py" value="77" />
           <entry key="rtf" value="1" />
-          <entry key="txt" value="16" />
+          <entry key="txt" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Image" value="521" />
-          <entry key="PLAIN_TEXT" value="24" />
-          <entry key="Python" value="62" />
+          <entry key="Image" value="688" />
+          <entry key="PLAIN_TEXT" value="32" />
+          <entry key="Python" value="77" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -79,22 +106,46 @@
           <split-first>
             <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
               <file pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/utils.py">
+                <entry file="file://$PROJECT_DIR$/analysis.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="672">
-                      <caret line="43" column="15" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
+                    <state relative-caret-position="412">
+                      <caret line="67" lean-forward="true" selection-start-line="67" selection-end-line="67" />
                       <folding>
-                        <element signature="e#0#23#0" expanded="true" />
+                        <element signature="e#0#18#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/lab_meeting_inputs.py">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="1104">
+                      <caret line="69" column="35" selection-start-line="69" selection-start-column="35" selection-end-line="69" selection-end-column="35" />
+                      <folding>
+                        <element signature="e#0#18#0" expanded="true" />
                       </folding>
                     </state>
                   </provider>
                 </entry>
               </file>
               <file pinned="false" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/analysis.py">
+                <entry file="file://$PROJECT_DIR$/lab_meeting_weights.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="304">
-                      <caret line="19" column="11" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
+                    <state relative-caret-position="102">
+                      <caret line="44" column="30" lean-forward="true" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
+                      <folding>
+                        <element signature="e#0#18#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/activity_contour.py">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="2096">
+                      <caret line="139" column="49" selection-start-line="139" selection-start-column="49" selection-end-line="139" selection-end-column="49" />
                       <folding>
                         <element signature="e#0#18#0" expanded="true" />
                       </folding>
@@ -109,25 +160,35 @@
               <file pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/train.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="632">
-                      <caret line="175" column="23" selection-start-line="175" selection-start-column="23" selection-end-line="175" selection-end-column="23" />
+                    <state relative-caret-position="608">
+                      <caret line="90" selection-start-line="90" selection-end-line="90" />
                       <folding>
                         <element signature="e#0#23#0" expanded="true" />
-                        <marker date="1541613087553" expanded="true" signature="1434:1436" ph="..." />
-                        <marker date="1541613087553" expanded="true" signature="2312:2651" ph="..." />
-                        <marker date="1541613087553" expanded="true" signature="4977:4984" ph="..." />
+                        <marker date="1542248588346" expanded="true" signature="1467:1468" ph="..." />
                       </folding>
                     </state>
                   </provider>
                 </entry>
               </file>
               <file pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/rnn.py">
+                <entry file="file://$PROJECT_DIR$/model.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="373">
-                      <caret line="52" column="52" selection-start-line="52" selection-start-column="52" selection-end-line="52" selection-end-column="52" />
+                    <state relative-caret-position="966">
+                      <caret line="63" column="20" selection-start-line="63" selection-start-column="20" selection-end-line="63" selection-end-column="20" />
                       <folding>
-                        <element signature="e#0#34#0" expanded="true" />
+                        <element signature="e#0#23#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/utils.py">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="432">
+                      <caret line="27" selection-start-line="27" selection-end-line="27" />
+                      <folding>
+                        <element signature="e#0#23#0" expanded="true" />
                       </folding>
                     </state>
                   </provider>
@@ -142,8 +203,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/curriculum.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="566">
-                  <caret line="51" column="31" lean-forward="true" selection-start-line="51" selection-start-column="31" selection-end-line="51" selection-end-column="31" />
+                <state relative-caret-position="774">
+                  <caret line="73" column="15" selection-start-line="73" selection-start-column="15" selection-end-line="73" selection-end-column="28" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -154,12 +215,25 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/config.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="450">
-                  <caret line="30" column="28" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="28" />
+                <state relative-caret-position="668">
+                  <caret line="65" column="32" selection-start-line="65" selection-start-column="32" selection-end-line="65" selection-end-column="32" />
                   <folding>
-                    <marker date="1541613367698" expanded="true" signature="160:169" ph="..." />
-                    <marker date="1541613367698" expanded="true" signature="605:610" ph="..." />
-                    <marker date="1541613367698" expanded="true" signature="773:838" ph="..." />
+                    <marker date="1542248730515" expanded="true" signature="160:169" ph="..." />
+                    <marker date="1542248730515" expanded="true" signature="725:730" ph="..." />
+                    <marker date="1542248730515" expanded="true" signature="893:958" ph="..." />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/rnn.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="952">
+                  <caret line="144" column="27" selection-start-line="144" selection-start-column="27" selection-end-line="144" selection-end-column="27" />
+                  <folding>
+                    <element signature="e#0#34#0" expanded="true" />
+                    <marker date="1542236438947" expanded="true" signature="7169:7174" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -188,12 +262,18 @@
       <find>self.sess</find>
       <find>next_Y</find>
       <find>X_pl</find>
+      <find>create_tf</find>
+      <find>trainable_list</find>
+      <find>log</find>
+      <find>weights</find>
+      <find>second_more</find>
     </findStrings>
     <replaceStrings>
       <replace>third</replace>
       <replace>third_longer</replace>
       <replace>fourth</replace>
       <replace>sess</replace>
+      <replace>second_last</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -216,21 +296,26 @@
         <option value="$PROJECT_DIR$/stationary.py" />
         <option value="$PROJECT_DIR$/stationary_tests/curriculum.py" />
         <option value="$PROJECT_DIR$/config1.py" />
-        <option value="$PROJECT_DIR$/inputs.py" />
-        <option value="$PROJECT_DIR$/rnn.py" />
+        <option value="$PROJECT_DIR$/model.py" />
+        <option value="$PROJECT_DIR$/activity_contour.py" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/rnn.py" />
         <option value="$PROJECT_DIR$/analysis.py" />
+        <option value="$PROJECT_DIR$/lab_meeting.py" />
+        <option value="$PROJECT_DIR$/inputs.py" />
+        <option value="$PROJECT_DIR$/lab_meeting_inputs.py" />
         <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/curriculum.py" />
+        <option value="$PROJECT_DIR$/lab_meeting_weights.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+  <component name="ProjectFrameBounds">
     <option name="x" value="-3440" />
-    <option name="y" value="-240" />
+    <option name="y" value="-217" />
     <option name="width" value="3440" />
-    <option name="height" value="1440" />
+    <option name="height" value="1417" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -254,6 +339,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -261,27 +347,68 @@
               <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
               <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="gold_copy" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="gold_copy" type="462c0819:PsiDirectoryNode" />
+              <item name="stationary" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="gold_copy" type="462c0819:PsiDirectoryNode" />
+              <item name="stationary" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="lab_meeting" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="lab_meeting" type="462c0819:PsiDirectoryNode" />
+              <item name="080" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="lab_meeting" type="462c0819:PsiDirectoryNode" />
+              <item name="080" type="462c0819:PsiDirectoryNode" />
+              <item name="stationary" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="full.screen.before.presentation.mode" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.completion" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myShowDebugConsoleByDefault" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/test/stationary_00" />
-      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/lab_meeting" />
+      <recent name="$PROJECT_DIR$/lab meeting" />
+      <recent name="$PROJECT_DIR$/gold_copy" />
+      <recent name="$PROJECT_DIR$/test" />
+      <recent name="$PROJECT_DIR$/gold" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lab_meeting/100rnn" />
+      <recent name="$PROJECT_DIR$/gold" />
+      <recent name="$PROJECT_DIR$/test_st" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/save_path" />
     </key>
@@ -298,7 +425,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.analysis">
+  <component name="RunManager" selected="Python.lab_meeting_weights">
     <configuration name="analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Neural_head_direction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -362,7 +489,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="training_stationary" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="lab_meeting" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Neural_head_direction" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -374,7 +501,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/lab_meeting_inputs.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -383,35 +510,41 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for analysis.test" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="lab_meeting_weights" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Neural_head_direction" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;analysis.test&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/lab_meeting_weights.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.training_stationary" />
-      <item itemvalue="Python.curriculum" />
-      <item itemvalue="Python tests.pytest for analysis.test" />
       <item itemvalue="Python.analysis" />
+      <item itemvalue="Python.lab_meeting" />
       <item itemvalue="Python.config" />
+      <item itemvalue="Python.curriculum" />
+      <item itemvalue="Python.lab_meeting_weights" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.analysis" />
+        <item itemvalue="Python.lab_meeting_weights" />
         <item itemvalue="Python.curriculum" />
+        <item itemvalue="Python.analysis" />
         <item itemvalue="Python.config" />
-        <item itemvalue="Python.training_stationary" />
-        <item itemvalue="Python tests.pytest for analysis.test" />
+        <item itemvalue="Python.lab_meeting" />
       </list>
     </recent_temporary>
   </component>
@@ -545,7 +678,28 @@
       <option name="project" value="LOCAL" />
       <updated>1541540282929</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="some cleanup, not finished">
+      <created>1541613607561</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1541613607561</updated>
+    </task>
+    <task id="LOCAL-00019" summary="pushed weights up">
+      <created>1541614136489</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1541614136489</updated>
+    </task>
+    <task id="LOCAL-00020" summary="pushed weights up">
+      <created>1542220630574</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1542220630574</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -554,20 +708,20 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3440" y="-240" width="3440" height="1440" extended-state="6" />
+    <frame x="-3440" y="-217" width="3440" height="1417" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.086815774" />
-      <window_info id="Structure" order="1" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info id="Structure" order="0" weight="0.24985285" />
+      <window_info id="Favorites" order="1" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.09593879" />
       <window_info anchor="bottom" id="Messages" order="0" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" weight="0.12992701" />
       <window_info anchor="bottom" id="Python Console" order="3" weight="0.22773723" />
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.329927" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.32846716" />
-      <window_info active="true" anchor="bottom" id="Run" order="7" visible="true" weight="0.229927" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32830188" />
+      <window_info anchor="bottom" id="Run" order="7" visible="true" weight="0.21132076" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" />
@@ -625,181 +779,210 @@
     <MESSAGE value="finished curriculum training" />
     <MESSAGE value="added regularization" />
     <MESSAGE value="some cleanup, not finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="some cleanup, not finished" />
+    <MESSAGE value="pushed weights up" />
+    <option name="LAST_COMMIT_MESSAGE" value="pushed weights up" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/lab_meeting_inputs.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/questions.rtf">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary_01/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary_00/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary_00/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary_00/images/weights.png" />
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="843">
+          <caret line="1657" selection-start-line="1657" selection-end-line="1657" />
+        </state>
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_03/loss.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_03/sorted_weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_03/weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_06/loss.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_06/sorted_weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_06/test_trials.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_06/weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_01/loss.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_00/loss.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_02/parameters.txt">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/gold/stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/gold/stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/gold/stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/gold/non_stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/gold/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/gold/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/input_stationary.png">
+      <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_02/loss.png" />
+    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/activity.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/weights__.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/curriculum/stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/curriculum/stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/080/stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/080/stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/080/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/080/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/100/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/100/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/gold_copy/stationary/images/weights.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/input_non_stationary.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/stationary/images/weights.png" />
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/inputs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="40" column="26" selection-start-line="40" selection-start-column="26" selection-end-line="40" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/sorted_weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary/test_trials.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary/weights.png" />
-    <entry file="file://$PROJECT_DIR$/test/stationary/checkpoint">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/parameters.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_00/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_00/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_00/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_00/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.cache/v/cache/lastfailed" />
-    <entry file="file://$PROJECT_DIR$/test/stationary_02/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary_02/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/stationary_00/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/stationary_00/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_00/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_00/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_00/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_00/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rnn.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="373">
-          <caret line="52" column="52" selection-start-line="52" selection-start-column="52" selection-end-line="52" selection-end-column="52" />
+        <state relative-caret-position="2016">
+          <caret line="133" column="47" selection-start-line="133" selection-start-column="47" selection-end-line="133" selection-end-column="47" />
           <folding>
-            <element signature="e#0#34#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
+            <marker date="1542233518124" expanded="true" signature="4966:4970" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_04/parameters.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_04/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary_04/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
+    <entry file="file://$PROJECT_DIR$/activity_contour.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="43" column="15" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/parameters.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/loss.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum/non_stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="19" column="11" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
+        <state relative-caret-position="2096">
+          <caret line="139" column="49" selection-start-line="139" selection-start-column="49" selection-end-line="139" selection-end-column="49" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
+    <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="632">
-          <caret line="175" column="23" selection-start-line="175" selection-start-column="23" selection-end-line="175" selection-end-column="23" />
+        <state relative-caret-position="432">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-            <marker date="1541613087553" expanded="true" signature="1434:1436" ph="..." />
-            <marker date="1541613087553" expanded="true" signature="2312:2651" ph="..." />
-            <marker date="1541613087553" expanded="true" signature="4977:4984" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="966">
+          <caret line="63" column="20" selection-start-line="63" selection-start-column="20" selection-end-line="63" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/080/stationary/images/weights.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rnn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="952">
+          <caret line="144" column="27" selection-start-line="144" selection-start-column="27" selection-end-line="144" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#34#0" expanded="true" />
+            <marker date="1542236438947" expanded="true" signature="7169:7174" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="608">
+          <caret line="90" selection-start-line="90" selection-end-line="90" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <marker date="1542248588346" expanded="true" signature="1467:1468" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="28" selection-start-line="30" selection-start-column="28" selection-end-line="30" selection-end-column="28" />
+        <state relative-caret-position="668">
+          <caret line="65" column="32" selection-start-line="65" selection-start-column="32" selection-end-line="65" selection-end-column="32" />
           <folding>
-            <marker date="1541613367698" expanded="true" signature="160:169" ph="..." />
-            <marker date="1541613367698" expanded="true" signature="605:610" ph="..." />
-            <marker date="1541613367698" expanded="true" signature="773:838" ph="..." />
+            <marker date="1542248730515" expanded="true" signature="160:169" ph="..." />
+            <marker date="1542248730515" expanded="true" signature="725:730" ph="..." />
+            <marker date="1542248730515" expanded="true" signature="893:958" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/curriculum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="566">
-          <caret line="51" column="31" lean-forward="true" selection-start-line="51" selection-start-column="31" selection-end-line="51" selection-end-column="31" />
+        <state relative-caret-position="774">
+          <caret line="73" column="15" selection-start-line="73" selection-start-column="15" selection-end-line="73" selection-end-column="28" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting_inputs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1104">
+          <caret line="69" column="35" selection-start-line="69" selection-start-column="35" selection-end-line="69" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="67" lean-forward="true" selection-start-line="67" selection-end-line="67" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/weights.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_h_aa.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_h_ab_sorted.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_h_ab_unsorted.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_h_ba_sorted.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_h_ba_unsorted.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/W_i_b_unsorted.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting_weights.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="44" column="30" lean-forward="true" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -20,7 +20,7 @@ def plot_activity(opts, sort_ix = None):
     image_folder = opts.image_folder
     data_name = opts.activity_name
 
-    sort_ix = sort_weights(opts)
+    sort_ix = messy_weights(opts)
 
     im_path = os.path.join(save_path,image_folder)
     if not os.path.exists(im_path):
@@ -82,6 +82,49 @@ def sort_weights(opts):
     stationary = opts.stationary
     state_size = opts.state_size
     save_path = opts.save_path
+    weight_name = opts.weight_name
+
+    with open(os.path.join(save_path, weight_name + '.pkl'), 'rb') as f:
+        weight_dict = pkl.load(f)
+
+    if stationary:
+        W_h = weight_dict['model/hidden/W_h:0']
+        W_h_ab = W_h[:state_size, state_size:]
+        W_h_ba = W_h[state_size:, :state_size]
+    else:
+        W_h_ab_bb = weight_dict['model/hidden/W_h_ab_bb:0']
+        W_h_ab = W_h_ab_bb[:state_size,:]
+        W_h_ba = weight_dict['model/hidden/W_h_ba:0']
+
+    if stationary == 0:
+        W_i_b = weight_dict['model/input/W_i_b:0']
+        diff = W_i_b[0, :] - W_i_b[1, :]
+        sort_ix_1 = np.argsort(diff)
+        W_h_ab_sorted = W_h_ab[:, sort_ix_1]
+        W_i_b_sorted = W_i_b[:, sort_ix_1]
+
+        thres = 2
+        diff = W_i_b_sorted[0, :] - W_i_b_sorted[1, :]
+        middle = np.argmax(diff > thres)
+        smaller = np.argmin(diff < -thres)
+
+        # sort relative to W_ab
+        left_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, :smaller],
+                                             axis=0, arg_pos=1)
+        right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, middle:],
+                                              axis=0, arg_pos=1)
+        sort_ix_2 = np.hstack((left_sort_ix, right_sort_ix + middle,
+                             range(smaller, middle)))
+        sort_ix = sort_ix_1[sort_ix_2]
+    else:
+        sort_ix, _ = utils.sort_weights(W_h_ba, axis=1, arg_pos=1)
+    return sort_ix
+
+def messy_weights(opts):
+    """Visualization of trained network."""
+    stationary = opts.stationary
+    state_size = opts.state_size
+    save_path = opts.save_path
     image_folder = opts.image_folder
     weight_name = opts.weight_name
 
@@ -104,14 +147,14 @@ def sort_weights(opts):
 
     if stationary == 0:
         W_i_b = weight_dict['model/input/W_i_b:0']
-        diff = W_i_b[2, :] - W_i_b[3, :]
+        diff = W_i_b[0, :] - W_i_b[1, :]
         sort_ix_1 = np.argsort(diff)
         W_h_ab_sorted = W_h_ab[:, sort_ix_1]
         W_h_ba_sorted = W_h_ba[sort_ix_1, :]
         W_i_b_sorted = W_i_b[:, sort_ix_1]
 
-        thres = 2
-        diff = W_i_b_sorted[2, :] - W_i_b_sorted[3, :]
+        thres = 1
+        diff = W_i_b_sorted[0, :] - W_i_b_sorted[1, :]
         middle = np.argmax(diff > thres)
         smaller = np.argmin(diff < -thres)
 
@@ -143,7 +186,7 @@ def sort_weights(opts):
     return sort_ix
 
 if __name__ == '__main__':
-    d = './curriculum'
+    d = './lab_meeting/100'
     dirs = [os.path.join(d, o) for o in os.listdir(d)
      if os.path.isdir(os.path.join(d, o))]
 
@@ -152,5 +195,5 @@ if __name__ == '__main__':
         opts.save_path = d
         plot_activity(opts)
         # plot_weights(opts)
-        sort_weights(opts)
+        messy_weights(opts)
 
