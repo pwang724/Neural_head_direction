@@ -41,11 +41,11 @@ def curriculum(rnn_size):
     first.load_checkpoint= False
 
     first_more = copy.deepcopy(st_model_opts)
-    first_more.epoch = int(201)
+    first_more.epoch = int(301)
     first_more.load_checkpoint= True
 
     second = copy.deepcopy(nonst_model_opts)
-    second.epoch = int(301)
+    second.epoch = int(1)
     second.load_checkpoint = False
     second.load_weights = True
     second.time_steps = 20
@@ -61,7 +61,8 @@ def curriculum(rnn_size):
     second_more.time_steps = 25
     second_more.time_loss_end = 25
     second_more.velocity_use = [1]
-    
+
+
     second_last = copy.deepcopy(nonst_model_opts)
     second_last.epoch = int(1)
     second_last.load_checkpoint = True
@@ -69,13 +70,15 @@ def curriculum(rnn_size):
     second_last.time_loss_end = 25
     second_last.velocity_use = [1]
     second_last.batch_size= 40
-
+    # second_last.velocity_max = 3
+    # second_last.velocity_size = 6
+    # second_last.save_path = './gold_copy/non_stationary'
     # c= [first, first_more]
-    c = [second, second_more]
+    c = [second]
     return c
 
 if __name__ == '__main__':
-        curriculum = curriculum(80)
+        curriculum = curriculum(70)
         for i, c in enumerate(curriculum):
             train(c)
             print('[!] Curriculum %d has finished' % (i))

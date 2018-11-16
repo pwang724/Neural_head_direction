@@ -29,13 +29,13 @@ class stationary_model_config(stationary_input_config):
     def __init__(self):
         super(stationary_model_config, self).__init__()
         self.stationary = True
-        self.rnn_size = 60
+        self.rnn_size = 70
         self.epoch = 101
-        self.batch_size = 20
+        self.batch_size = 25
         self.test_batch_size = 5
         self.learning_rate = .001
         self.time_loss_start = 5
-        self.time_loss_end = 25
+        self.time_loss_end = 20
         self.save_path = './test/stationary'
         self.load_checkpoint = False
         self.weight_alpha = 1

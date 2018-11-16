@@ -1,4 +1,3 @@
-import tensorflow as tf
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -47,7 +46,7 @@ def sort_weights(mat, axis, arg_pos= 1):
         mat_sorted = mat[:, sort_ix]
     return sort_ix, mat_sorted
 
-def pretty_image(tup, col, row, save_name):
+def pretty_image(tup, col, row, save_name, vmin = -1, vmax = 1):
     """input: list of tuples
     first arg of each tuple: title
     second arg of each tuple: matrix to plot
@@ -57,7 +56,8 @@ def pretty_image(tup, col, row, save_name):
     for t, w in tup:
         if np.ndim(w) == 1:
             w = w.reshape(1,-1)
-        sns.heatmap(w, cmap='RdBu_r', vmin=-1, vmax=1, ax=ax[r, c], cbar=False)
+        sns.heatmap(w, cmap='RdBu_r', vmin=vmin, vmax=vmax, ax=ax[r, c],
+                    cbar=False)
         if t != '':
             ax[r, c].set_title(t)
         ax[r, c].axis('off')

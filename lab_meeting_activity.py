@@ -29,11 +29,6 @@ def get_activity(opts):
     batch, time, n_rnn = states.shape
     _, _, n_state = labels.shape
 
-    # assert batch == opts.batch_size
-    # assert time == opts.time_steps
-    # assert n_rnn == opts.rnn_size
-    # assert n_state == opts.state_size
-
     states = states.reshape(batch * time, n_rnn)  # each neuron's activity is a column
     pred = predictions.reshape(batch * time, -1)
     labels = labels.reshape(batch * time, n_state)
@@ -48,13 +43,13 @@ def get_activity(opts):
     cos_mean = np.sum(cos * labels, axis=1)
     sin_mean = np.sum(sin * labels, axis=1)
     com_rad = np.arctan2(sin_mean, cos_mean)
-    com = (com_rad / scale) % 20
+    com = (com_rad / scale) % state_size
 
     # find the velocity for each label
     vel = np.zeros_like(com)
     vel[1:] = com[1:] - com[:-1]
-    vel[vel > opts.velocity_max + .5] -= 20
-    vel[vel < -(opts.velocity_max + .5)] += 20
+    vel[vel > opts.velocity_max + .5] -= state_size
+    vel[vel < -(opts.velocity_max + .5)] += state_size
     vel[::time] *= 0  # velocity is zero at the start of each example
 
     # find the COM for the neurons
@@ -62,14 +57,14 @@ def get_activity(opts):
     cos_mean = np.sum(cos * pred, axis=1) / pred_norm
     sin_mean = np.sum(sin * pred, axis=1) / pred_norm
     com_rad_n = np.arctan2(sin_mean, cos_mean)
-    com_n = (com_rad_n / scale) % 20
+    com_n = (com_rad_n / scale) % state_size
 
     com, vel, com_rad = com.ravel(), vel.ravel(), com_rad.ravel()
     points = np.around(np.stack([com, vel, com_rad, com_n], axis=1), 3)
     return points, states, labels
 
 
-def plot_activity(opts, points, activity, labels, plot_state=False):
+def plot_receptive_field(opts, points, activity, save_path, plot_stationary=False):
     """
     Plot the activity of a neuron using data from all processed batches.
     """
@@ -89,62 +84,83 @@ def plot_activity(opts, points, activity, labels, plot_state=False):
     x_mesh, y_mesh = np.meshgrid(x, y)
     cos, _ = np.meshgrid(cos, y)
     sin, _ = np.meshgrid(sin, y)
-    if plot_state:
+    if plot_stationary:
         nc, nr = 5, 4
         neurons = np.arange(opts.state_size)  # state neurons
     else:
-        nc, nr = 5, 8
+        nc, nr = 7, 8
         neurons = np.arange(opts.state_size, opts.rnn_size)  # extra neurons
 
-
     f_linear, ax_linear = plt.subplots(ncols=nc, nrows=nr)
-    # plt.suptitle('Linear Interpolated Data')
-
-    c, r = 0, 0
-    for i, n in enumerate(neurons):
-        z_lin = griddata(points[:, :2], activity[:, n], (x_mesh, y_mesh), method='linear')
-        plt.sca(ax_linear[r, c])
-        # plt.title('Neuron {}'.format(n))
-        plt.contourf(x, y, z_lin, cmap='RdBu_r')
+    for i, n in enumerate(neurons[:nc*nr]):
+        plot_i = np.unravel_index(i, (nr, nc))
+        z_lin = griddata(points[:, :2], activity[:, n], (x_mesh, y_mesh),
+                         method='linear')
+        plt.sca(ax_linear[plot_i])
+        plt.contourf(x, y, z_lin, cmap='RdBu_r', vmin=-1, vmax=1)
         plt.axis('off')
 
-        # find the global centroid
-        if np.nanmax(z_lin) <= 0:
-            z_lin -= np.nanmean(z_lin)  # center activations at the median
+    plt.savefig(os.path.join('./lab_meeting/images/' + save_path + '.png'),
+                transparent=True, dpi=500)
 
-        z_lin[np.isnan(z_lin)] = 0
-        z_lin[z_lin < 0] = 0
-        norm = np.sum(z_lin)
+def plot_activity(opts):
+    sort_ix = sort_weights(opts)
+    state_size = opts.state_size
+    save_path = opts.save_path
+    image_folder = opts.image_folder
+    data_name = opts.activity_name
 
-        cos_mean = np.sum(cos * z_lin) / norm
-        sin_mean = np.sum(sin * z_lin) / norm
-        com_rad = np.arctan2(sin_mean, cos_mean)
-        com_x = (com_rad / scale) % 20
-        com_y = np.sum(y_mesh * z_lin) / norm
-        # plt.scatter(com_x, com_y, c='k')
+    with open(os.path.join(save_path, data_name + '.pkl'), 'rb') as f:
+        data_dict = pkl.load(f)
 
-        c += 1
-        if c == nc:
-            c = 0
-            r += 1
-        if r == nr:
-            break
-    # plt.tight_layout()
-    plt.show()
+    states, predictions, labels = data_dict['states'], data_dict[
+        'predictions'], \
+                                  data_dict['Y']
 
+    row = 3
+    tup = []
+    for i in range(row):
+        cur_state = np.array([s[i] for s in states])
+        cur_state_core = cur_state[:, :state_size]
+        cur_state_extra = cur_state[:, state_size:]
+        cur_pred = [p[i] for p in predictions]
+        cur_label = labels[i, :, :]
+        if i < 1:
+            tup.append(('Prediction', cur_pred))
+            tup.append(('Label', cur_label))
+        else:
+            tup.append(('', cur_pred))
+            tup.append(('', cur_label))
+    plot_name = os.path.join(save_path, image_folder, 'activity.png')
+    plt.style.use('dark_background')
+    utils.pretty_image(tup, col=2, row=row, save_name=plot_name, vmin=-.5,
+                       vmax=.5)
+
+
+# # find the global centroid
+# if np.nanmax(z_lin) <= 0:
+#     z_lin -= np.nanmean(z_lin)  # center activations at the median
+#
+# z_lin[np.isnan(z_lin)] = 0
+# z_lin[z_lin < 0] = 0
+# norm = np.sum(z_lin)
+#
+# cos_mean = np.sum(cos * z_lin) / norm
+# sin_mean = np.sum(sin * z_lin) / norm
+# com_rad = np.arctan2(sin_mean, cos_mean)
+# com_x = (com_rad / scale) % 20
+# com_y = np.sum(y_mesh * z_lin) / norm
+# # plt.scatter(com_x, com_y, c='k')
 
 if __name__ == '__main__':
-    d = './gold/non_stationary/'
-
+    d = './gold_copy/non_stationary/'
     opts = utils.load_parameters(d + '/parameters')
     opts.save_path = d
-    points, activity, labels = get_activity(opts)
-    # points.append(p)
-    # activity.append(act)
-    # labels.append(lab)
+    plot_activity(opts)
 
-    # points = np.concatenate(points, axis=0)
-    # activity = np.concatenate(activity, axis=0)
-    # labels = np.concatenate(labels, axis=0)
-    plot_activity(opts, points, activity, labels, plot_state=False)
+    points, activity, labels = get_activity(opts)
+    plot_receptive_field(opts, points, activity,
+                  'activity_nonstationary', plot_stationary=opts.stationary)
+    plot_receptive_field(opts, points, activity,
+                  'activity_stationary', plot_stationary=True)
 

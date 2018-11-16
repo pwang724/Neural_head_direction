@@ -64,15 +64,16 @@ def train(opts):
             os.makedirs(opts.save_path)
 
         X, Y = inputs.create_inputs(opts)
-        train_iter, next_element = create_tf_dataset(X, Y, opts.batch_size)
+        X_pl, Y_pl = create_placeholders(opts)
+        train_iter, next_element = create_tf_dataset(X_pl, Y_pl,
+                                                     opts.batch_size)
         model = RNN(next_element[0], next_element[1], opts, training=True)
 
         logger = defaultdict(list)
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
-            sess.run(train_iter.initializer)
-
+            sess.run(train_iter.initializer, feed_dict={X_pl:X, Y_pl:Y})
             if opts.load_checkpoint:
                 model.load()
             else:
@@ -122,7 +123,7 @@ def train(opts):
 if __name__ == '__main__':
     st_model_opts = config.stationary_model_config()
     non_st_model_opts = config.non_stationary_model_config()
-    opts = non_st_model_opts
+    opts = st_model_opts
     train(opts)
 
 

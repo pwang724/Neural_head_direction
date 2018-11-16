@@ -32,7 +32,7 @@ def plot_activity(opts, sort_ix = None):
     states, predictions, labels = data_dict['states'], data_dict['predictions'], \
                                   data_dict['Y']
 
-    row = 10
+    row = 3
     tup = []
     for i in range(row):
         cur_state = np.array([s[i] for s in states])
@@ -98,30 +98,39 @@ def sort_weights(opts):
 
     if stationary == 0:
         W_i_b = weight_dict['model/input/W_i_b:0']
-        diff = W_i_b[0, :] - W_i_b[1, :]
+        if W_i_b.shape[0] >2:
+            ix0,ix1= 2,3
+        else:
+            ix0, ix1 = 0, 1
+
+        diff = W_i_b[ix0, :] - W_i_b[ix1, :]
+        weird_ix = np.all(W_i_b[ix0:ix1 + 1, :] < -1, axis=0)
+        diff[weird_ix] = 10
         sort_ix_1 = np.argsort(diff)
+
         W_h_ab_sorted = W_h_ab[:, sort_ix_1]
         W_i_b_sorted = W_i_b[:, sort_ix_1]
 
         thres = 2
-        diff = W_i_b_sorted[0, :] - W_i_b_sorted[1, :]
-        middle = np.argmax(diff > thres)
-        smaller = np.argmin(diff < -thres)
+        diff = W_i_b_sorted[ix0, :] - W_i_b_sorted[ix1, :]
+        middle = np.argmin(diff < -thres)
+        weird = 51 #hack
 
         # sort relative to W_ab
-        left_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, :smaller],
+        left_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, :middle],
                                              axis=0, arg_pos=1)
-        right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, middle:],
+        right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, middle:weird],
                                               axis=0, arg_pos=1)
         sort_ix_2 = np.hstack((left_sort_ix, right_sort_ix + middle,
-                             range(smaller, middle)))
-        sort_ix = sort_ix_1[sort_ix_2]
+                             range(weird, len(diff))))
+        sort_ix = sort_ix_1[sort_ix_2.astype(np.int)]
     else:
         sort_ix, _ = utils.sort_weights(W_h_ba, axis=1, arg_pos=1)
     return sort_ix
 
 def messy_weights(opts):
     """Visualization of trained network."""
+    plt.style.use('dark_background')
     stationary = opts.stationary
     state_size = opts.state_size
     save_path = opts.save_path
@@ -164,7 +173,7 @@ def messy_weights(opts):
         right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, middle:],
                                               axis=0, arg_pos=1)
         sort_ix_2 = np.hstack((left_sort_ix, right_sort_ix + middle,
-                             range(smaller, middle)))
+                             range(smaller, middle))).astype(int)
         W_h_ab_sorted = W_h_ab_sorted[:, sort_ix_2]
         W_h_ba_sorted = W_h_ba_sorted[sort_ix_2, :]
         W_i_b_sorted = W_i_b_sorted[:, sort_ix_2]
@@ -186,7 +195,7 @@ def messy_weights(opts):
     return sort_ix
 
 if __name__ == '__main__':
-    d = './lab_meeting/100'
+    d = './lab_meeting/070'
     dirs = [os.path.join(d, o) for o in os.listdir(d)
      if os.path.isdir(os.path.join(d, o))]
 
@@ -195,5 +204,5 @@ if __name__ == '__main__':
         opts.save_path = d
         plot_activity(opts)
         # plot_weights(opts)
-        messy_weights(opts)
+        # messy_weights(opts)
 
