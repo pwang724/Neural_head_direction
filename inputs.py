@@ -97,20 +97,22 @@ def create_inputs(opts):
         velocity_gap = opts.velocity_gap
         velocity_max = opts.velocity_max
         velocity_size = opts.velocity_size
+        velocity_use = opts.velocity_use
         assert velocity_start < time_steps, "first velocity command occurs after last time-step"
 
         one_hot_len = velocity_size
         vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
         vel_per_batch = len(vel_ix)
         vel_total = vel_per_batch * batch_size
-        vel_pos = np.linspace(velocity_max, 1., velocity_max)
+        vel_pos = np.linspace(1.,velocity_max, velocity_max)
         vel_neg = np.linspace(-velocity_max, -1, velocity_max)
-        vel_options = np.hstack((vel_neg, vel_pos[::-1]))
+        vel_options = np.hstack((vel_neg[velocity_use-1:], vel_pos[:velocity_use]))
+        print(vel_options)
 
         vel_shifts_onehot = correlated_random(vel_options, size= vel_total)
-        vel_pos_onehot = np.copy(vel_shifts_onehot / 2.)
+        vel_pos_onehot = np.copy(vel_shifts_onehot / velocity_max)
         vel_pos_onehot[vel_shifts_onehot < 0] = 0
-        vel_neg_onehot = np.copy(vel_shifts_onehot / 2.)
+        vel_neg_onehot = np.copy(vel_shifts_onehot / velocity_max)
         vel_neg_onehot[vel_shifts_onehot > 0] = 0
         vel_neg_onehot = np.abs(vel_neg_onehot)
         vel_one_hot = np.vstack((vel_pos_onehot, vel_neg_onehot)).transpose()
@@ -123,7 +125,7 @@ def create_inputs(opts):
 
         # vel_options = np.array([i for i in range(-velocity_max, velocity_max+1) if i != 0])
         # shift = vel_options[vel_direction]
-        vel_shifts = (vel_shifts_onehot * velocity_max).astype(int)
+        vel_shifts = vel_shifts_onehot.astype(int)
         shift = vel_shifts.reshape(batch_size, vel_per_batch)
 
         # create labels from input
