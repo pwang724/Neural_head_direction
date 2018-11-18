@@ -2,6 +2,8 @@ import tensorflow as tf
 import os
 import pickle as pkl
 import rnn as rnn_helper
+import config
+import utils
 
 class Model(object):
     '''abstract model class'''
@@ -14,8 +16,9 @@ class Model(object):
         self.save_path = save_path
         self.saver = None
         self.opts = None
+        self.weight_dict = None
 
-    def save(self, path =None):
+    def save(self, path = None):
         if path is not None:
             save_path = path
             if not os.path.exists(save_path):
@@ -46,6 +49,8 @@ class Model(object):
         f_name = os.path.join(save_path, self.opts.weight_name)
         sess = tf.get_default_session()
         vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        # vars = tf.all_variables()
+        # vars = self.weight_dict
         var_dict = {v.name: sess.run(v) for v in vars}
         with open(f_name + ".pkl", 'wb') as f:
             pkl.dump(var_dict, f)
@@ -65,9 +70,11 @@ class RNN(Model):
             learning_rate = opts.learning_rate
             optimizer= tf.train.AdamOptimizer(learning_rate)
             excludes = []
+            k = config.weight_names()
+            weight_dict = utils.get_tf_vars_as_dict()
 
             if not opts.stationary and opts.fix_weights:
-                name = 'model/hidden/' + self.k.W_h_aa + ':0'
+                name = 'model/hidden/' + k.W_h_aa + ':0'
                 W_h_aa = [v for v in tf.global_variables() if v.name == name]
                 excludes += W_h_aa
 
@@ -83,22 +90,6 @@ class RNN(Model):
             for v in trainable_list:
                 print(v)
 
-    def save_activity(self, x, y, path = None):
-        # run some test activity
-        if path is not None:
-            save_path = path
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-        else:
-            save_path = self.save_path
-        f_name = os.path.join(save_path, self.opts.activity_name)
-        sess = tf.get_default_session()
-        X, Y, states, predictions = sess.run(
-            [x, y, self.states, self.predictions])
-        data = {'X': X, 'Y': Y, 'states': states, 'predictions': predictions}
-        with open(f_name + ".pkl", 'wb') as f:
-            pkl.dump(data, f)
-
     def _build(self, x, y):
         opts = self.opts
         stationary = opts.stationary
@@ -111,33 +102,29 @@ class RNN(Model):
 
         inputs_series = tf.unstack(x, axis=1)
         labels_series = tf.unstack(y, axis=1)
-        if stationary:
-            self.k, self.weight_dict = rnn_helper.define_stationary_weights(opts)
-            rnn_func = rnn_helper.rnn_stationary
-        else:
-            self.k, self.weight_dict = rnn_helper.define_nonstationary_weights(opts)
-            rnn_func = rnn_helper.rnn_non_stationary
+        W_h = rnn_helper.define_weights(opts)
 
         init_state = tf.zeros(shape=[batch_size, rnn_size], dtype= tf.float32)
         state_series = [init_state]
+        logit_series = []
         for i, current_input in enumerate(inputs_series):
-            next_state = rnn_func(self.weight_dict, self.k, state_series[-1], current_input, i, opts)
+            next_state, next_logit = rnn_helper.rnn(state_series[-1], current_input, i, opts)
             state_series.append(next_state)
+            logit_series.append(next_logit)
 
+        state_series.pop(0)
         self.states = state_series
-        W_out_tf = self.weight_dict[self.k.W_out]
-        self.logits = [tf.matmul(s, W_out_tf) for s in state_series]
+        self.logits = logit_series
         self.predictions = [tf.nn.softmax(l) for l in self.logits]
         xe_losses = [tf.nn.softmax_cross_entropy_with_logits_v2(logits=l, labels=labels)
                      for l, labels in zip(self.logits, labels_series)]
         self.xe_loss = tf.reduce_mean(xe_losses[time_loss_start:time_loss_end])
 
-        W_h = self.weight_dict[self.k.W_h]
+        W_h_aa = W_h[:state_size, :state_size]
         W_h_ab = W_h[:, state_size:]
         W_h_ba = W_h[state_size:,:]
         self.weight_loss = opts.weight_alpha * \
-                           (tf.reduce_mean(tf.abs(W_h_ab))+
-                            tf.reduce_mean(tf.abs(W_h_ba)))
+                           (tf.reduce_mean(tf.abs(W_h_ab))+ tf.reduce_mean(tf.abs(W_h_ba)))
 
         rnn_activity = tf.stack(state_series, axis=1)
         extra_neurons_activity = rnn_activity[:,:,state_size:]

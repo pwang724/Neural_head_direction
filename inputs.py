@@ -21,7 +21,7 @@ def correlated_random(x, size):
     l = []
     low, high = 2, 4
     while len(l) < size:
-        duration = np.random.randint(low=4, high=8)
+        duration = np.random.randint(low=low, high=high)
         value = np.random.choice(x)
         for i in range(duration):
             l.append(value)
@@ -95,27 +95,36 @@ def create_inputs(opts):
     if velocity:
         velocity_start = opts.velocity_start
         velocity_gap = opts.velocity_gap
-        velocity_use = opts.velocity_use
         velocity_max = opts.velocity_max
+        velocity_size = opts.velocity_size
         assert velocity_start < time_steps, "first velocity command occurs after last time-step"
 
-        one_hot_len = 2 * velocity_max
+        one_hot_len = velocity_size
         vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
         vel_per_batch = len(vel_ix)
         vel_total = vel_per_batch * batch_size
-        vel_options = np.array([-1 * l for l in velocity_use] + [l-1 for l in velocity_use])
+        vel_pos = np.linspace(velocity_max, 1., velocity_max)
+        vel_neg = np.linspace(-velocity_max, -1, velocity_max)
+        vel_options = np.hstack((vel_neg, vel_pos[::-1]))
 
-        vel_direction = correlated_random(vel_options + velocity_max, size= vel_total)
-        vel_one_hot = np.zeros((vel_total, one_hot_len))
-        vel_one_hot[np.arange(vel_total), vel_direction] = 1
+        vel_shifts_onehot = correlated_random(vel_options, size= vel_total)
+        vel_pos_onehot = np.copy(vel_shifts_onehot / 2.)
+        vel_pos_onehot[vel_shifts_onehot < 0] = 0
+        vel_neg_onehot = np.copy(vel_shifts_onehot / 2.)
+        vel_neg_onehot[vel_shifts_onehot > 0] = 0
+        vel_neg_onehot = np.abs(vel_neg_onehot)
+        vel_one_hot = np.vstack((vel_pos_onehot, vel_neg_onehot)).transpose()
+
+
         vel_one_hot = vel_one_hot.reshape(batch_size, vel_per_batch, one_hot_len)
         velocity = np.zeros((input.shape[0], input.shape[1], one_hot_len))
         velocity[:, vel_ix, :] = vel_one_hot
         input = np.concatenate([input, velocity], axis=2)
 
-        vel_options = np.array([i for i in range(-velocity_max, velocity_max+1) if i != 0])
-        shift = vel_options[vel_direction]
-        shift = shift.reshape(batch_size, vel_per_batch)
+        # vel_options = np.array([i for i in range(-velocity_max, velocity_max+1) if i != 0])
+        # shift = vel_options[vel_direction]
+        vel_shifts = (vel_shifts_onehot * velocity_max).astype(int)
+        shift = vel_shifts.reshape(batch_size, vel_per_batch)
 
         # create labels from input
 
@@ -138,7 +147,43 @@ def create_inputs(opts):
 
     return input.astype(np.float32), labels.astype(np.float32)
 
+def plot_moving_inputs(inputs, labels, opts):
+    rc = (2,3)
+    fig, ax = plt.subplots(rc[0], rc[1])
+    state = [x[:,:opts.state_size] for x in inputs[:rc[0]]]
+    extra = [x[:,opts.state_size:opts.state_size+2] for x in inputs[:rc[0]]]
+    labels = labels[:rc[0]]
 
+    i=0
+    for batch in zip(state, extra, labels):
+        for d in batch:
+            plot_ix = np.unravel_index(i, rc)
+            cur_ax = ax[plot_ix]
+            adjust(cur_ax)
+            plt.sca(cur_ax)
+            plt.imshow(d, cmap='RdBu_r', vmin=-1, vmax=1)
+            cb = plt.colorbar()
+            cb.set_ticks([-1, 1])
+            i+=1
+    plt.show()
+
+def plot_stationary_inputs(inputs, labels, opts):
+    rc = (2,2)
+    fig, ax = plt.subplots(rc[0], rc[1])
+    state = inputs[:rc[0]]
+    labels = labels[:rc[0]]
+    i=0
+    for batch in zip(state, labels):
+        for d in batch:
+            plot_ix = np.unravel_index(i, rc)
+            cur_ax = ax[plot_ix]
+            adjust(cur_ax)
+            plt.sca(cur_ax)
+            plt.imshow(d, cmap='RdBu_r', vmin=-.3, vmax=.3)
+            cb = plt.colorbar()
+            cb.set_ticks([0, .3])
+            i+=1
+    plt.show()
 
 
 
@@ -146,10 +191,11 @@ if __name__ == '__main__':
     stationary = config.stationary_input_config()
     non_stationary = config.non_stationary_input_config()
 
-    opts = stationary
+    opts = non_stationary
+    opts.time_steps = 100
     inputs, labels = create_inputs(opts)
 
     print(inputs.shape)
     print(labels.shape)
-    plot_stationary(inputs,labels, stationary)
-    # plot_moving(inputs,labels, non_stationary)
+    # plot_stationary_inputs(inputs,labels, stationary)
+    plot_moving_inputs(inputs,labels, non_stationary)

@@ -2,9 +2,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os
-import config
 import json
-from matplotlib import ticker
+import tensorflow as tf
 
 def save_parameters(opts, save_name):
     cur_dict = opts.__dict__
@@ -25,6 +24,11 @@ def load_parameters(save_path):
         setattr(config, key, val)
     return config
 
+def get_tf_vars_as_dict():
+    vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+    var_dict = {os.path.split(v.name)[1][:-2]: v for v in vars}
+    return var_dict
+
 def sort_weights(mat, axis, arg_pos= 1):
     if arg_pos:
         temp = np.square(mat * (mat > 0))
@@ -32,15 +36,10 @@ def sort_weights(mat, axis, arg_pos= 1):
         temp = np.square(mat * (mat < 0))
 
     if axis == 1:
-        ix = np.arange(mat.shape[1]).reshape(-1, 1)
-        moment = np.matmul(temp, ix).squeeze() / np.sum(temp, axis=1)
-        sort_ix = np.argsort(moment)
+        max_ix = np.argmax(mat, axis=1)
+        sort_ix = np.argsort(max_ix)
         mat_sorted = mat[sort_ix, :]
     else:
-        ix = np.arange(mat.shape[0]).reshape(1, -1)
-        moment = np.matmul(ix, temp).squeeze() / np.sum(temp, axis=0)
-        sort_ix = np.argsort(moment)
-
         max_ix = np.argmax(mat, axis=0)
         sort_ix = np.argsort(max_ix)
         mat_sorted = mat[:, sort_ix]

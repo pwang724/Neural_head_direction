@@ -21,9 +21,9 @@ def get_activity(opts):
 
     noise_skip = 5
     states = np.stack(states, axis=1)  # examples x t x neurons, so each example is in axis 0
-    states = states[:, 1+noise_skip:, :]  # ignore the first time point where there is no label
+    states = states[:, noise_skip:, :]  # ignore the first time point where there is no label
     predictions = np.stack(predictions, axis=1)
-    predictions = predictions[:, 1+noise_skip:, :]
+    predictions = predictions[:, noise_skip:, :]
     labels = np.stack(labels, axis=0)
     labels = labels[:, noise_skip:, :]
     batch, time, n_rnn = states.shape
@@ -64,7 +64,7 @@ def get_activity(opts):
     return points, states, labels
 
 
-def plot_receptive_field(opts, points, activity, save_path, plot_stationary=False):
+def plot_receptive_field(opts, points, activity, plot_stationary=False):
     """
     Plot the activity of a neuron using data from all processed batches.
     """
@@ -100,8 +100,11 @@ def plot_receptive_field(opts, points, activity, save_path, plot_stationary=Fals
         plt.contourf(x, y, z_lin, cmap='RdBu_r', vmin=-1, vmax=1)
         plt.axis('off')
 
-    plt.savefig(os.path.join('./lab_meeting/images/' + save_path + '.png'),
-                transparent=True, dpi=500)
+    save_path = opts.save_path
+    image_folder = opts.image_folder
+    n = 'state' if plot_stationary else 'support'
+    plot_name = os.path.join(save_path, image_folder, 'receptive_field_' + n + '.png')
+    plt.savefig(plot_name, transparent=True, dpi=500)
 
 def plot_activity(opts):
     sort_ix = sort_weights(opts)
@@ -153,14 +156,12 @@ def plot_activity(opts):
 # # plt.scatter(com_x, com_y, c='k')
 
 if __name__ == '__main__':
-    d = './gold_copy/non_stationary/'
+    d = './test/non_stationary/'
     opts = utils.load_parameters(d + '/parameters')
     opts.save_path = d
-    plot_activity(opts)
+    # plot_activity(opts)
 
     points, activity, labels = get_activity(opts)
-    plot_receptive_field(opts, points, activity,
-                  'activity_nonstationary', plot_stationary=opts.stationary)
-    plot_receptive_field(opts, points, activity,
-                  'activity_stationary', plot_stationary=True)
+    plot_receptive_field(opts, points, activity, plot_stationary=opts.stationary)
+    plot_receptive_field(opts, points, activity, plot_stationary=True)
 
