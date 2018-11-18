@@ -1,12 +1,10 @@
-import numpy as np
-import pandas as pd
-import utils
 import os
-import config
 import pickle as pkl
-import matplotlib.pyplot as plt
+import numpy as np
 from scipy.interpolate import griddata
 from analysis import sort_weights
+import matplotlib.pyplot as plt
+
 
 def get_activity(opts):
     state_size = opts.state_size
@@ -64,7 +62,7 @@ def get_activity(opts):
     return points, states, labels
 
 
-def plot_receptive_field(opts, points, activity, plot_stationary=False):
+def plot_receptive_field(opts, points, activity, plot_stationary=False, save_name = None):
     """
     Plot the activity of a neuron using data from all processed batches.
     """
@@ -100,44 +98,14 @@ def plot_receptive_field(opts, points, activity, plot_stationary=False):
         plt.contourf(x, y, z_lin, cmap='RdBu_r', vmin=-1, vmax=1)
         plt.axis('off')
 
-    save_path = opts.save_path
-    image_folder = opts.image_folder
-    n = 'state' if plot_stationary else 'support'
-    plot_name = os.path.join(save_path, image_folder, 'receptive_field_' + n + '.png')
+    if save_name is None:
+        save_path = opts.save_path
+        image_folder = opts.image_folder
+        n = 'state' if plot_stationary else 'support'
+        plot_name = os.path.join(save_path, image_folder, 'receptive_field_' + n + '.png')
+    else:
+        plot_name = os.path.join(save_name +  '.png')
     plt.savefig(plot_name, transparent=True, dpi=500)
-
-def plot_activity(opts):
-    sort_ix = sort_weights(opts)
-    state_size = opts.state_size
-    save_path = opts.save_path
-    image_folder = opts.image_folder
-    data_name = opts.activity_name
-
-    with open(os.path.join(save_path, data_name + '.pkl'), 'rb') as f:
-        data_dict = pkl.load(f)
-
-    states, predictions, labels = data_dict['states'], data_dict[
-        'predictions'], \
-                                  data_dict['Y']
-
-    row = 3
-    tup = []
-    for i in range(row):
-        cur_state = np.array([s[i] for s in states])
-        cur_state_core = cur_state[:, :state_size]
-        cur_state_extra = cur_state[:, state_size:]
-        cur_pred = [p[i] for p in predictions]
-        cur_label = labels[i, :, :]
-        if i < 1:
-            tup.append(('Prediction', cur_pred))
-            tup.append(('Label', cur_label))
-        else:
-            tup.append(('', cur_pred))
-            tup.append(('', cur_label))
-    plot_name = os.path.join(save_path, image_folder, 'activity.png')
-    plt.style.use('dark_background')
-    utils.pretty_image(tup, col=2, row=row, save_name=plot_name, vmin=-.5,
-                       vmax=.5)
 
 
 # # find the global centroid
@@ -154,14 +122,3 @@ def plot_activity(opts):
 # com_x = (com_rad / scale) % 20
 # com_y = np.sum(y_mesh * z_lin) / norm
 # # plt.scatter(com_x, com_y, c='k')
-
-if __name__ == '__main__':
-    d = './test/non_stationary/'
-    opts = utils.load_parameters(d + '/parameters')
-    opts.save_path = d
-    # plot_activity(opts)
-
-    points, activity, labels = get_activity(opts)
-    plot_receptive_field(opts, points, activity, plot_stationary=opts.stationary)
-    plot_receptive_field(opts, points, activity, plot_stationary=True)
-

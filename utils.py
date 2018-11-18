@@ -97,4 +97,58 @@ def adjust(ax):
     # ax.yaxis.set_ticks([0, 0.5, 1.0])
     # ax.set_ylim([0, 1])
 
+def plot_weights(data, save_path, ylabel ='', xlabel= ''):
+    rect = [0.15, 0.15, 0.65, 0.65]
+    rect_cb = [0.82, 0.15, 0.02, 0.65]
+    plt.style.use('dark_background')
+    fig = plt.figure(figsize=(4.0, 4.0))
+    ax = fig.add_axes(rect)
+
+    adjust(ax)
+    vlim = np.round(np.max(abs(data)), decimals=1)
+    im = ax.imshow(data, cmap= 'RdBu_r', vmin=-vlim, vmax=vlim,
+                   interpolation='none')
+    plt.axis('tight')
+    for loc in ['bottom', 'top', 'left', 'right']:
+        ax.spines[loc].set_visible(False)
+    ax.tick_params('both', length=0)
+    ax.set_xlabel(xlabel, labelpad=-5)
+    ax.set_ylabel(ylabel, labelpad=-5)
+    ax.set_xticks([0, data.shape[1]])
+    ax.set_yticks([0, data.shape[0]])
+    plt.axis('scaled')
+    ax = fig.add_axes(rect_cb)
+    cb = plt.colorbar(im, cax=ax, ticks=[-vlim, vlim])
+    cb.outline.set_linewidth(0.5)
+    cb.set_label('Weight', labelpad=-10)
+    plt.tick_params(axis='both', which='major')
+    plt.savefig(os.path.join('./lab_meeting/images/' + save_path + '.png'),
+                transparent=True)
+
+def plot_weights_simple(data, save_path, ylabel='',xlabel='', vmin= None, vmax= None):
+    rect = [0.15, 0.15, 0.65, 0.65]
+    plt.style.use('dark_background')
+    fig = plt.figure(figsize=(4.0, 4.0))
+    ax = fig.add_axes(rect)
+
+    adjust(ax)
+    if vmin is None or vmax is None:
+        vmax = np.round(np.max(abs(data)), decimals=1)
+        vmin = -vmax
+
+    im = ax.imshow(data, cmap= 'RdBu_r', vmin=vmin, vmax=vmax,
+                   interpolation='none')
+    plt.axis('tight')
+    for loc in ['bottom', 'top', 'left', 'right']:
+        ax.spines[loc].set_visible(False)
+    ax.tick_params('both', length=0)
+    ax.set_xlabel(xlabel, labelpad=-5)
+    ax.set_ylabel(ylabel, labelpad=-5)
+    ax.set_xticks([0, data.shape[1]-1])
+    ax.set_yticks([0, data.shape[0]-1])
+    plt.tick_params(axis='both', which='major')
+    # plt.axis('image')
+    plt.savefig(save_path + '.png',
+                transparent=True)
+
 

@@ -143,9 +143,9 @@ if __name__ == '__main__':
     opts.load_checkpoint = False
     opts.dir_weights = './test/stationary/weight.pkl'
     opts.epoch = 301
-    opts.velocity_use = 1
-    opts.velocity_max = 1
-    opts.load_checkpoint = False
+    opts.velocity_use = 2
+    opts.velocity_max = 2
+    opts.load_checkpoint = True
     train(opts)
 
 

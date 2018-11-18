@@ -15,10 +15,7 @@ class shared_config(object):
         self.bump_std = 1.5
 
         self.n_input = 1000
-
         self.time_steps = 25
-        self.weight_alpha = .1
-        self.activity_alpha = .1
 
         self.noise = True
         self.noise_intensity = .3
@@ -42,12 +39,14 @@ class stationary_model_config(stationary_input_config):
     def __init__(self):
         super(stationary_model_config, self).__init__()
         self.stationary = True
+        self.weight_alpha = 0
+        self.activity_alpha = .1
 
         self.epoch = 501
         self.batch_size = 25
         self.learning_rate = .001
-        self.time_loss_start = 5
-        self.time_loss_end = 20
+        self.time_loss_start = 1
+        self.time_loss_end = 25
         self.save_path = './test/stationary'
         self.load_checkpoint = False
 
@@ -68,6 +67,8 @@ class non_stationary_model_config(non_stationary_input_config):
         super(non_stationary_model_config, self).__init__()
 
         self.stationary = False
+        self.weight_alpha = 1
+        self.activity_alpha = .1
 
         self.epoch = 401
         self.batch_size = 20
@@ -76,7 +77,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.time_loss_end = 20
 
         self.load_weights = True #load pre-trained weights using stationary input
-        self.fix_weights = True
+        self.fix_weights = False
         self.dir_weights = './test/stationary/weight.pkl'
 
         self.load_checkpoint = False #load checkpoint, overrides load_weights

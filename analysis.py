@@ -4,6 +4,7 @@ import os
 import config
 import pickle as pkl
 import matplotlib.pyplot as plt
+import analyze_receptive_field
 
 ##printing losses
 # image_path = os.path.join(epoch_path, image_folder)
@@ -161,10 +162,12 @@ if __name__ == '__main__':
     d = './test/non_stationary/'
     opts = utils.load_parameters(d + '/parameters')
     opts.save_path = d
-
-    # ix = sort_weights(opts)
-    #
     plot_activity(opts)
     plot_weights(opts)
     plot_sorted_weights(opts)
+
+    points, activity, labels = analyze_receptive_field.get_activity(opts)
+    analyze_receptive_field.plot_receptive_field(opts, points, activity,
+                                                 plot_stationary=opts.stationary)
+    analyze_receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True)
 

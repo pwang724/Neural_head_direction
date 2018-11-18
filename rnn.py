@@ -121,7 +121,7 @@ def initialize_weights(opts):
                 W_h_ba_old = w_dict['model/hidden/W_h_ba:0']
                 W_b_old = w_dict['model/hidden/W_b:0']
 
-                # # fill with stretch
+                # fill with stretch
                 # W_h_aa_old_filled = np.copy(W_h_aa_old)
                 # np.fill_diagonal(W_h_aa_old_filled, 1)
                 # resized = np.zeros((rnn_size-state_size, state_size))
@@ -129,8 +129,8 @@ def initialize_weights(opts):
                 # for i in range(rnn_size-state_size):
                 #     ix = (np.fabs(r - i)).argmin()
                 #     resized[i,:] = W_h_aa_old_filled[ix,:]
-                # W_h_ab_old = resized
-                # W_h_ba_old = resized.transpose()
+                # W_h_ab_old = resized.transpose()
+                # W_h_ba_old = resized
 
                 sess.run(tf.assign(W_h_aa_tf, W_h_aa_old))
                 sess.run(tf.assign(W_h_ba_tf, W_h_ba_old))
