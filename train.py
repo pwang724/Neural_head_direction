@@ -105,21 +105,9 @@ def train(opts):
                     logger['xe_loss'].append(xe_loss)
                     logger['activity_loss'].append(activity_loss)
                     logger['weight_loss'].append(weight_loss)
-                if (ep % 10 == 0 and ep>0): #display in terminal
+                if (ep % 25 == 0 and ep>0): #display in terminal
                     print('[*] Epoch %d  total_loss=%.2f xe_loss=%.2f a_loss=%.2f, w_loss=%.2f'
                           % (ep, cur_loss, xe_loss, activity_loss, weight_loss))
-                if (ep % 1000 == 0) and (ep >0): #save files
-                    # save parameters, save weights, save some test data, save model ckpt
-                    epoch_path = modify_path(save_path)
-                    model.save(epoch_path)
-                    utils.save_parameters(opts, os.path.join(epoch_path,
-                                                             opts.parameter_name))
-                    model.save_weights(epoch_path)
-                    save_activity(model, next_element[0], next_element[1],
-                                        epoch_path)
-                    with open(os.path.join(save_path, opts.log_name + '.pkl'),
-                              'wb') as f:
-                        pkl.dump(logger,f)
 
             #save latest
             model.save()

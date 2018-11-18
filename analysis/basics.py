@@ -1,10 +1,10 @@
 import numpy as np
 import utils
 import os
-import config
 import pickle as pkl
 import matplotlib.pyplot as plt
-import analyze_receptive_field
+from analysis import receptive_field
+
 
 ##printing losses
 # image_path = os.path.join(epoch_path, image_folder)
@@ -58,7 +58,7 @@ def plot_activity(opts, sort_ix = None):
             tup.append(('', cur_pred))
             tup.append(('', cur_label))
     plot_name = os.path.join(save_path, image_folder, 'activity.png')
-    utils.pretty_image(tup, col=4, row=row, save_name=plot_name)
+    utils.subimage_easy(tup, col=4, row=row, save_name=plot_name)
 
 
 def plot_weights(opts):
@@ -75,7 +75,7 @@ def plot_weights(opts):
         weight_dict = pkl.load(f)
 
     plot_name = os.path.join(save_path, image_folder, 'weights.png')
-    utils.pretty_image(weight_dict.items(), col=2, row=4, save_name=plot_name)
+    utils.subimage_easy(weight_dict.items(), col=2, row=4, save_name=plot_name)
 
 def sort_weights(opts):
     """Visualization of trained network."""
@@ -112,16 +112,27 @@ def sort_weights(opts):
         weird = np.sum(weird_ix == False)
 
         # sort relative to W_ab
-        left_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, :middle],
+        left_sort_ix, _ = sort_by_max_weight(W_h_ab_sorted[:, :middle],
                                              axis=0)
-        right_sort_ix, _ = utils.sort_weights(W_h_ab_sorted[:, middle:weird],
+        right_sort_ix, _ = sort_by_max_weight(W_h_ab_sorted[:, middle:weird],
                                               axis=0)
         sort_ix_2 = np.hstack((left_sort_ix, right_sort_ix + middle,
                              range(weird, support_size)))
         sort_ix = sort_ix_1[sort_ix_2.astype(np.int)]
     else:
-        sort_ix, _ = utils.sort_weights(W_h_ba, axis=1)
+        sort_ix, _ = sort_by_max_weight(W_h_ba, axis=1)
     return sort_ix
+
+def sort_by_max_weight(mat, axis):
+    if axis == 1:
+        max_ix = np.argmax(mat, axis=1)
+        sort_ix = np.argsort(max_ix)
+        mat_sorted = mat[sort_ix, :]
+    else:
+        max_ix = np.argmax(mat, axis=0)
+        sort_ix = np.argsort(max_ix)
+        mat_sorted = mat[:, sort_ix]
+    return sort_ix, mat_sorted
 
 def plot_sorted_weights(opts):
     """Visualization of trained network."""
@@ -156,7 +167,7 @@ def plot_sorted_weights(opts):
         titles.append('W_i_b_sorted')
 
     plot_name = os.path.join(save_path, image_folder, 'weights__.png')
-    utils.pretty_image(zip(titles, data), col=2, row=3, save_name=plot_name)
+    utils.subimage_easy(zip(titles, data), col=2, row=3, save_name=plot_name)
 
 if __name__ == '__main__':
     d = './test/non_stationary/'
@@ -166,8 +177,8 @@ if __name__ == '__main__':
     plot_weights(opts)
     plot_sorted_weights(opts)
 
-    points, activity, labels = analyze_receptive_field.get_activity(opts)
-    analyze_receptive_field.plot_receptive_field(opts, points, activity,
-                                                 plot_stationary=opts.stationary)
-    analyze_receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True)
+    points, activity, labels = receptive_field.get_activity(opts)
+    receptive_field.plot_receptive_field(opts, points, activity,
+                                         plot_stationary=opts.stationary)
+    receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True)
 

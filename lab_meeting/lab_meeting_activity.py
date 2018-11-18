@@ -1,11 +1,10 @@
 import numpy as np
-import pandas as pd
 import utils
 import os
-import config
 import pickle as pkl
 import matplotlib.pyplot as plt
-import analyze_receptive_field
+from analysis import receptive_field
+
 
 def plot_activity(opts, save_name):
     save_path = opts.save_path
@@ -31,8 +30,8 @@ def plot_activity(opts, save_name):
             tup.append(('', cur_label))
     plot_name = save_name + '.png'
     plt.style.use('dark_background')
-    utils.pretty_image(tup, col=2, row=row, save_name=plot_name, vmin=-.5,
-                       vmax=.5)
+    utils.subimage_easy(tup, col=2, row=row, save_name=plot_name, vmin=-.5,
+                        vmax=.5)
 
 if __name__ == '__main__':
     path = './lab_meeting/images/'
@@ -49,10 +48,10 @@ if __name__ == '__main__':
 
     d = './test/non_stationary/'
     opts = utils.load_parameters(d + '/parameters')
-    points, activity, labels = analyze_receptive_field.get_activity(opts)
-    analyze_receptive_field.plot_receptive_field(opts, points, activity,
-                                                 plot_stationary=opts.stationary,
-                         save_name=path + 'receptive_field_state')
-    analyze_receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True,
-                         save_name=path + 'receptive_field_support')
+    points, activity, labels = receptive_field.get_activity(opts)
+    receptive_field.plot_receptive_field(opts, points, activity,
+                                         plot_stationary=opts.stationary,
+                                         save_name=path + 'receptive_field_state')
+    receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True,
+                                         save_name=path + 'receptive_field_support')
 

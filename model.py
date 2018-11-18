@@ -71,7 +71,6 @@ class RNN(Model):
             optimizer= tf.train.AdamOptimizer(learning_rate)
             excludes = []
             k = config.weight_names()
-            weight_dict = utils.get_tf_vars_as_dict()
 
             if not opts.stationary and opts.fix_weights:
                 name = 'model/hidden/' + k.W_h_aa + ':0'

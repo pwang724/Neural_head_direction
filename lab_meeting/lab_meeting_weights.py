@@ -7,7 +7,7 @@ from utils import plot_weights, plot_weights_simple
 import os
 import inputs
 import pickle as pkl
-from analysis import sort_weights
+from analysis.basics import sort_weights
 
 path = './lab_meeting/images/'
 

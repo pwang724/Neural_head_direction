@@ -12,6 +12,11 @@ import utils
 np.random.seed(2)
 tf.set_random_seed(2)
 
+def get_tf_vars_as_dict():
+    vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+    var_dict = {os.path.split(v.name)[1][:-2]: v for v in vars}
+    return var_dict
+
 def define_weights(opts):
     k = config.weight_names()
     state_size = opts.state_size
@@ -44,7 +49,7 @@ def define_weights(opts):
 
 def rnn(h_prev, input, name, opts):
     k = config.weight_names()
-    weight_dict = utils.get_tf_vars_as_dict()
+    weight_dict = get_tf_vars_as_dict()
     state_size = opts.state_size
     W_h_aa = weight_dict[k.W_h_aa]
     W_h_ab = weight_dict[k.W_h_ab]
@@ -77,7 +82,7 @@ def rnn(h_prev, input, name, opts):
 def initialize_weights(opts):
     sess = tf.get_default_session()
     k = config.weight_names()
-    weight_dict = utils.get_tf_vars_as_dict()
+    weight_dict = get_tf_vars_as_dict()
 
     state_size = opts.state_size
     rnn_size = opts.rnn_size

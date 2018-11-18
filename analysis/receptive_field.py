@@ -2,9 +2,8 @@ import os
 import pickle as pkl
 import numpy as np
 from scipy.interpolate import griddata
-from analysis import sort_weights
+import analysis.basics
 import matplotlib.pyplot as plt
-
 
 def get_activity(opts):
     state_size = opts.state_size
@@ -66,7 +65,7 @@ def plot_receptive_field(opts, points, activity, plot_stationary=False, save_nam
     """
     Plot the activity of a neuron using data from all processed batches.
     """
-    sort_ix = sort_weights(opts)
+    sort_ix = analysis.basics.sort_weights(opts)
     activity[:,opts.state_size:] = activity[:,opts.state_size+sort_ix]
 
     x = np.arange(0, opts.state_size)

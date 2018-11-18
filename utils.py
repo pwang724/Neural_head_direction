@@ -3,7 +3,7 @@ import seaborn as sns
 import numpy as np
 import os
 import json
-import tensorflow as tf
+import matplotlib.cm as cm
 
 def save_parameters(opts, save_name):
     cur_dict = opts.__dict__
@@ -24,28 +24,7 @@ def load_parameters(save_path):
         setattr(config, key, val)
     return config
 
-def get_tf_vars_as_dict():
-    vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-    var_dict = {os.path.split(v.name)[1][:-2]: v for v in vars}
-    return var_dict
-
-def sort_weights(mat, axis, arg_pos= 1):
-    if arg_pos:
-        temp = np.square(mat * (mat > 0))
-    else:
-        temp = np.square(mat * (mat < 0))
-
-    if axis == 1:
-        max_ix = np.argmax(mat, axis=1)
-        sort_ix = np.argsort(max_ix)
-        mat_sorted = mat[sort_ix, :]
-    else:
-        max_ix = np.argmax(mat, axis=0)
-        sort_ix = np.argsort(max_ix)
-        mat_sorted = mat[:, sort_ix]
-    return sort_ix, mat_sorted
-
-def pretty_image(tup, col, row, save_name, vmin = -1, vmax = 1):
+def subimage_easy(tup, col, row, save_name, vmin = -1, vmax = 1):
     """input: list of tuples
     first arg of each tuple: title
     second arg of each tuple: matrix to plot
@@ -68,21 +47,29 @@ def pretty_image(tup, col, row, save_name, vmin = -1, vmax = 1):
     fig.savefig(save_name, bbox_inches='tight', figsize = (14,10))
     plt.close()
 
-def pretty_plot(tup, col, row, save_name):
+def subplot_easy(tup, legends, col, row, save_name):
     """input: list of tuples
     first arg of each tuple: title
     second arg of each tuple: matrix to plot
     """
+    colors = cm.jet(np.linspace(0,1,len(legends)))
+    cyc = plt.cycler('color', colors)
+    # cmap = plt.get_cmap('jet')
+    # colors = [cmap(i) for i in np.linspace(0, 1, len(legends))]
+
     c, r = 0, 0
-    fig, ax = plt.subplots(nrows=row, ncols=col)
+    fig, ax = plt.subplots(nrows=row, ncols=col, figsize=(10,10))
     for t, w in tup:
+        ax[r, c].set_prop_cycle(cyc)
         ax[r, c].plot(w)
         ax[r, c].set_title(t)
+        ax[r, c].legend(legends)
         c += 1
         if c >= col:
             r += 1
             c = 0
-    fig.savefig(save_name, bbox_inches='tight', figsize= (14,10))
+    plt.tight_layout()
+    fig.savefig(save_name, bbox_inches='tight')
     plt.close()
 
 def adjust(ax):
