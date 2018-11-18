@@ -1,4 +1,4 @@
-import experiments.experiment as exp
+import experiments.experiment_stationary as exp
 import os
 import numpy as np
 import pickle

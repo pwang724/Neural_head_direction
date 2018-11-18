@@ -21,6 +21,8 @@ class shared_config(object):
         self.noise_intensity = .3
         self.noise_density = .5
 
+        self.mask_Wbb = True
+
         self.file_name = 'model'
         self.weight_name = 'weight'
         self.activity_name = 'activity'
@@ -45,7 +47,7 @@ class stationary_model_config(stationary_input_config):
         self.epoch = 501
         self.batch_size = 25
         self.learning_rate = .001
-        self.time_loss_start = 1
+        self.time_loss_start = 4
         self.time_loss_end = 25
         self.save_path = './test/stationary'
         self.load_checkpoint = False
@@ -79,6 +81,8 @@ class non_stationary_model_config(non_stationary_input_config):
         self.load_weights = True #load pre-trained weights using stationary input
         self.fix_weights = False
         self.dir_weights = './test/stationary/weight.pkl'
+        self.initialize_W_ab_diagonal = False
+        self.initialize_W_ba_diagonal = False
 
         self.load_checkpoint = False #load checkpoint, overrides load_weights
         self.save_path = './test/non_stationary'

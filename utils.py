@@ -44,7 +44,7 @@ def subimage_easy(tup, col, row, save_name, vmin = -1, vmax = 1):
         if c >= col:
             r += 1
             c = 0
-    fig.savefig(save_name, bbox_inches='tight', figsize = (14,10))
+    fig.savefig(save_name, bbox_inches='tight', figsize = (14,10), dpi=500)
     plt.close()
 
 def subplot_easy(tup, legends, col, row, save_name):

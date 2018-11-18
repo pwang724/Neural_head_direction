@@ -122,8 +122,12 @@ class RNN(Model):
         W_h_aa = W_h[:state_size, :state_size]
         W_h_ab = W_h[:, state_size:]
         W_h_ba = W_h[state_size:,:]
+        W_h_bb = W_h[state_size:, state_size:]
         self.weight_loss = opts.weight_alpha * \
-                           (tf.reduce_mean(tf.abs(W_h_ab))+ tf.reduce_mean(tf.abs(W_h_ba)))
+                           (tf.reduce_mean(tf.abs(W_h_ab))
+                            + tf.reduce_mean(tf.abs(W_h_ba))
+                            + tf.reduce_mean(tf.abs(W_h_bb))
+                            )
 
         rnn_activity = tf.stack(state_series, axis=1)
         extra_neurons_activity = rnn_activity[:,:,state_size:]

@@ -153,10 +153,13 @@ def plot_sorted_weights(opts):
     # plot sorted_weights
     W_h_ab = weight_dict['model/hidden/W_h_ab:0']
     W_h_ba = weight_dict['model/hidden/W_h_ba:0']
+    W_h_bb = weight_dict['model/hidden/W_h_bb:0']
     W_h_ab_sorted = W_h_ab[:, sort_ix]
     W_h_ba_sorted = W_h_ba[sort_ix, :]
-    data = [W_h_ab, W_h_ab_sorted, W_h_ba, W_h_ba_sorted]
-    titles = ['W_h_ab', 'W_h_ab_sorted', 'W_h_ba', 'W_h_ba_sorted']
+    W_h_bb_sorted = W_h_bb[sort_ix, :]
+    W_h_bb_sorted = W_h_bb_sorted[:, sort_ix]
+    data = [W_h_ab, W_h_ab_sorted, W_h_ba, W_h_ba_sorted, W_h_bb, W_h_bb_sorted]
+    titles = ['W_h_ab', 'sorted', 'W_h_ba', 'sorted', 'W_h_bb','sorted']
 
     if stationary == 0:
         W_i_b = weight_dict['model/input/W_i_b:0']
@@ -164,21 +167,27 @@ def plot_sorted_weights(opts):
         data.append(W_i_b)
         data.append(W_i_b_sorted)
         titles.append('W_i_b')
-        titles.append('W_i_b_sorted')
+        titles.append('sorted')
 
     plot_name = os.path.join(save_path, image_folder, 'weights__.png')
-    utils.subimage_easy(zip(titles, data), col=2, row=3, save_name=plot_name)
+    utils.subimage_easy(zip(titles, data), col=2, row=4, save_name=plot_name)
 
 if __name__ == '__main__':
-    d = './test/non_stationary/'
-    opts = utils.load_parameters(d + '/parameters')
-    opts.save_path = d
-    plot_activity(opts)
-    plot_weights(opts)
-    plot_sorted_weights(opts)
+    root = '../experiments/vary_weight_loss/files/00/'
+    d0 = root + 'stationary/'
+    d1 = root + 'moving/'
 
-    points, activity, labels = receptive_field.get_activity(opts)
-    receptive_field.plot_receptive_field(opts, points, activity,
-                                         plot_stationary=opts.stationary)
-    receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True)
+    for d in [d0, d1]:
+        if os.path.exists(d0):
+            opts = utils.load_parameters(d + 'parameters')
+            opts.save_path = d
+            # plot_activity(opts)
+            # plot_weights(opts)
+            plot_sorted_weights(opts)
+
+            # if opts.stationary == 0:
+            #     points, activity, labels = receptive_field.get_activity(opts)
+            #     receptive_field.plot_receptive_field(opts, points, activity,
+            #                                          plot_stationary=opts.stationary)
+            #     receptive_field.plot_receptive_field(opts, points, activity, plot_stationary=True)
 

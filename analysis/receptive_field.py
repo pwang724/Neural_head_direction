@@ -104,7 +104,7 @@ def plot_receptive_field(opts, points, activity, plot_stationary=False, save_nam
         plot_name = os.path.join(save_path, image_folder, 'receptive_field_' + n + '.png')
     else:
         plot_name = os.path.join(save_name +  '.png')
-    plt.savefig(plot_name, transparent=True, dpi=500)
+    plt.savefig(plot_name, dpi=500)
 
 
 # # find the global centroid

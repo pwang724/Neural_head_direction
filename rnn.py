@@ -100,8 +100,9 @@ def initialize_weights(opts):
     sess.run(tf.assign(W_h_bb_tf, np.zeros((support_size, support_size))))
     W_h_mask = W_h_mask_tf.eval()
     W_h_mask[:, :] = 1
-    W_h_mask[state_size:, state_size:] = 0
     np.fill_diagonal(W_h_mask, 0)
+    if opts.mask_Wbb:
+        W_h_mask[state_size:, state_size:] = 0
     sess.run(tf.assign(W_h_mask_tf, W_h_mask))
 
     if opts.stationary:
@@ -128,14 +129,17 @@ def initialize_weights(opts):
 
                 # fill with stretch
                 # W_h_aa_old_filled = np.copy(W_h_aa_old)
-                # np.fill_diagonal(W_h_aa_old_filled, 1)
-                # resized = np.zeros((rnn_size-state_size, state_size))
-                # r = np.arange(0, rnn_size-state_size, (rnn_size-state_size)/state_size)
-                # for i in range(rnn_size-state_size):
-                #     ix = (np.fabs(r - i)).argmin()
-                #     resized[i,:] = W_h_aa_old_filled[ix,:]
-                # W_h_ab_old = resized.transpose()
-                # W_h_ba_old = resized
+                W_h_aa_old_filled = np.eye(W_h_aa_old.shape[0]) * 0.25
+                np.fill_diagonal(W_h_aa_old_filled, 1)
+                resized = np.zeros((rnn_size-state_size, state_size))
+                r = np.arange(0, rnn_size-state_size, (rnn_size-state_size)/state_size)
+                for i in range(rnn_size-state_size):
+                    ix = (np.fabs(r - i)).argmin()
+                    resized[i,:] = W_h_aa_old_filled[ix,:]
+                if opts.initialize_W_ab_diagonal:
+                    W_h_ab_old = resized.transpose()
+                if opts.initialize_W_ba_diagonal:
+                    W_h_ba_old = resized
 
                 sess.run(tf.assign(W_h_aa_tf, W_h_aa_old))
                 sess.run(tf.assign(W_h_ba_tf, W_h_ba_old))
