@@ -7,6 +7,11 @@ import config
 import os
 import utils
 
+
+# set seed for reproducibility
+np.random.seed(2)
+tf.set_random_seed(2)
+
 def define_weights(opts):
     k = config.weight_names()
     state_size = opts.state_size
@@ -63,7 +68,6 @@ def rnn(h_prev, input, name, opts):
         in_b = tf.matmul(input[:, state_size:], W_i_b)
         a_in = tf.concat([in_a, in_b], axis=1)
 
-    W_h = tf.multiply(W_h, W_h_mask)
     W_h_masked = tf.multiply(W_h, W_h_mask)
     a_hidden = tf.matmul(h_prev, W_h_masked)
     state = tf.tanh(W_b + a_in + a_hidden, name='time_{}'.format(name))

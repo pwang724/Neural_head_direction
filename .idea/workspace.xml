@@ -1,45 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a4002b9d-acf3-4127-a4c4-23dde84d8b39" name="Default" comment="got ready for printing">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/activity_nonstationary.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/activity_stationary.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/activity_support.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/activity_velocity.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/input_non_stationary.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_meeting/images/input_stationary.png" afterDir="false" />
+    <list default="true" id="a4002b9d-acf3-4127-a4c4-23dde84d8b39" name="Default" comment="modified velocity input">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/activity.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/checkpoint" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/images/activity.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/images/weights.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/images/weights__.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/log.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/model.ckpt.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/parameters.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/non_stationary/weight.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/activity.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/checkpoint" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/images/activity.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/images/weights.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/images/weights__.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/log.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/model.ckpt.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/parameters.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gold_copy/stationary/weight.pkl" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/inputs.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_meeting_activity.py" beforeDir="false" afterPath="$PROJECT_DIR$/lab_meeting_activity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/rnn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,44 +18,45 @@
     <session id="2044067143">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="14" />
           <entry key="project.open.time.0" value="5" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.3" value="5" />
           <entry key="project.open.time.31" value="1" />
+          <entry key="project.open.time.4" value="2" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="13" />
+          <entry key="project.opened" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="7754" />
+          <entry key="Python Console" value="7933" />
           <entry key="dummy" value="121" />
-          <entry key="py" value="39079" />
-          <entry key="txt" value="157" />
+          <entry key="py" value="39401" />
+          <entry key="txt" value="374" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="278" />
-          <entry key="Python" value="46833" />
+          <entry key="PLAIN_TEXT" value="495" />
+          <entry key="Python" value="47334" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="checkpoint" value="8" />
           <entry key="lastfailed" value="1" />
-          <entry key="png" value="924" />
-          <entry key="py" value="106" />
+          <entry key="png" value="965" />
+          <entry key="py" value="108" />
           <entry key="rtf" value="1" />
           <entry key="txt" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Image" value="924" />
+          <entry key="Image" value="965" />
           <entry key="PLAIN_TEXT" value="32" />
-          <entry key="Python" value="106" />
+          <entry key="Python" value="108" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -100,11 +68,11 @@
         <splitter split-orientation="horizontal" split-proportion="0.49144635">
           <split-first>
             <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-              <file pinned="false" current-in-tab="false">
+              <file pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/lab_meeting_activity.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="726">
-                      <caret line="156" lean-forward="true" selection-start-line="156" selection-end-line="156" />
+                    <state relative-caret-position="-38">
+                      <caret line="106" column="36" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
                       <folding>
                         <element signature="e#0#18#0" expanded="true" />
                       </folding>
@@ -115,7 +83,7 @@
               <file pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/lab_meeting_weights.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="460">
+                    <state relative-caret-position="1008">
                       <caret line="72" column="38" selection-start-line="72" selection-start-column="38" selection-end-line="72" selection-end-column="38" />
                       <folding>
                         <element signature="e#0#18#0" expanded="true" />
@@ -128,20 +96,8 @@
               <file pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/analysis.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="454">
-                      <caret line="142" column="49" lean-forward="true" selection-start-line="142" selection-start-column="49" selection-end-line="142" selection-end-column="49" />
-                      <folding>
-                        <element signature="e#0#18#0" expanded="true" />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
-              <file pinned="false" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/inputs.py">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="388">
-                      <caret line="114" column="46" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
+                    <state relative-caret-position="778">
+                      <caret line="160" column="20" selection-start-line="160" selection-start-column="20" selection-end-line="160" selection-end-column="20" />
                       <folding>
                         <element signature="e#0#18#0" expanded="true" />
                       </folding>
@@ -150,26 +106,22 @@
                 </entry>
               </file>
               <file pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/lab_meeting_inputs.py">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="160">
-                      <caret line="10" column="13" lean-forward="true" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-                    </state>
-                  </provider>
+                <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights__.png">
+                  <provider selected="true" editor-type-id="images" />
                 </entry>
               </file>
             </leaf>
           </split-first>
           <split-second>
             <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-              <file pinned="false" current-in-tab="false">
+              <file pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/train.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="298">
-                      <caret line="120" selection-start-line="120" selection-end-line="120" />
+                    <state relative-caret-position="778">
+                      <caret line="145" column="25" selection-start-line="145" selection-start-column="25" selection-end-line="145" selection-end-column="25" />
                       <folding>
                         <element signature="e#0#23#0" expanded="true" />
-                        <marker date="1542499670982" expanded="true" signature="2044:2045" ph="..." />
+                        <marker date="1542508142335" expanded="true" signature="2041:2042" ph="..." />
                       </folding>
                     </state>
                   </provider>
@@ -178,8 +130,8 @@
               <file pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/model.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="906">
-                      <caret line="114" column="27" selection-start-line="114" selection-start-column="27" selection-end-line="114" selection-end-column="27" />
+                    <state relative-caret-position="666">
+                      <caret line="116" column="34" selection-start-line="116" selection-start-column="34" selection-end-line="116" selection-end-column="34" />
                       <folding>
                         <element signature="e#0#23#0" expanded="true" />
                       </folding>
@@ -190,7 +142,7 @@
               <file pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/utils.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="54">
+                    <state relative-caret-position="672">
                       <caret line="47" column="57" selection-start-line="47" selection-start-column="57" selection-end-line="47" selection-end-column="57" />
                       <folding>
                         <element signature="e#0#31#0" expanded="true" />
@@ -199,11 +151,11 @@
                   </provider>
                 </entry>
               </file>
-              <file pinned="false" current-in-tab="true">
+              <file pinned="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/rnn.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="528">
-                      <caret line="40" column="29" lean-forward="true" selection-start-line="40" selection-start-column="29" selection-end-line="40" selection-end-column="29" />
+                    <state relative-caret-position="587">
+                      <caret line="98" column="33" selection-start-line="98" selection-start-column="33" selection-end-line="98" selection-end-column="33" />
                     </state>
                   </provider>
                 </entry>
@@ -217,8 +169,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/curriculum.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="752">
-                  <caret line="47" column="25" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
+                <state relative-caret-position="288">
+                  <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -229,11 +181,11 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/config.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="486">
-                  <caret line="60" column="29" selection-start-line="60" selection-start-column="29" selection-end-line="60" selection-end-column="29" />
+                <state relative-caret-position="1248">
+                  <caret line="78" column="31" selection-start-line="78" selection-start-column="31" selection-end-line="78" selection-end-column="31" />
                   <folding>
-                    <marker date="1542503103237" expanded="true" signature="425:434" ph="..." />
-                    <marker date="1542503103237" expanded="true" signature="1258:1323" ph="..." />
+                    <marker date="1542508142331" expanded="true" signature="425:434" ph="..." />
+                    <marker date="1542508142331" expanded="true" signature="1259:1324" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -306,21 +258,21 @@
         <option value="$PROJECT_DIR$/lab_meeting_receptive_field.py" />
         <option value="$PROJECT_DIR$/lab_meeting_weights.py" />
         <option value="$PROJECT_DIR$/utils.py" />
-        <option value="$PROJECT_DIR$/rnn.py" />
-        <option value="$PROJECT_DIR$/model.py" />
         <option value="$PROJECT_DIR$/lab_meeting_activity.py" />
+        <option value="$PROJECT_DIR$/inputs.py" />
+        <option value="$PROJECT_DIR$/model.py" />
+        <option value="$PROJECT_DIR$/rnn.py" />
+        <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/analysis.py" />
-        <option value="$PROJECT_DIR$/inputs.py" />
-        <option value="$PROJECT_DIR$/config.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" fullScreen="true">
     <option name="x" value="-3440" />
-    <option name="y" value="-217" />
+    <option name="y" value="-240" />
     <option name="width" value="3440" />
-    <option name="height" value="1417" />
+    <option name="height" value="1440" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -351,6 +303,42 @@
             <path>
               <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
               <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="lab_meeting" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="non_stationary" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="non_stationary" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="stationary" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Neural_head_direction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural_head_direction" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="stationary" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -394,7 +382,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.inputs">
+  <component name="RunManager" selected="Python.lab_meeting_activity">
     <configuration name="analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Neural_head_direction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -408,6 +396,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analysis.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="config" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Neural_head_direction" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/config.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -458,48 +467,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="model" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Neural_head_direction" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/model.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="rnn" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Neural_head_direction" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/rnn.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="train" type="PythonConfigurationType" factoryName="Python">
       <module name="Neural_head_direction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -521,21 +488,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="pytest in test" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="Neural_head_direction" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/test&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.train" />
       <item itemvalue="Python.analysis" />
       <item itemvalue="Python.lab_meeting_activity" />
-      <item itemvalue="Python.model" />
-      <item itemvalue="Python.rnn" />
       <item itemvalue="Python.inputs" />
+      <item itemvalue="Python.config" />
+      <item itemvalue="Python tests.pytest in test" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.inputs" />
-        <item itemvalue="Python.analysis" />
         <item itemvalue="Python.lab_meeting_activity" />
-        <item itemvalue="Python.rnn" />
-        <item itemvalue="Python.model" />
+        <item itemvalue="Python.analysis" />
+        <item itemvalue="Python tests.pytest in test" />
+        <item itemvalue="Python.config" />
+        <item itemvalue="Python.inputs" />
       </list>
     </recent_temporary>
   </component>
@@ -704,21 +686,38 @@
       <option name="project" value="LOCAL" />
       <updated>1542340953155</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="changed velocity input to be a graded vector whose magnitude signifies degree of shift">
+      <created>1542503151123</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1542503151123</updated>
+    </task>
+    <task id="LOCAL-00024" summary="modified velocity input">
+      <created>1542504351577</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1542504351577</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TestHistory">
     <history-entry file="pytest_for_analysis_test - 2018.11.05 at 10h 44m 06s.xml">
       <configuration name="pytest for analysis.test" configurationId="tests" />
     </history-entry>
+    <history-entry file="pytest_in_test - 2018.11.17 at 21h 23m 06s.xml">
+      <configuration name="pytest in test" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3440" y="-217" width="3440" height="1417" extended-state="6" />
+    <frame x="-3440" y="-240" width="3440" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Structure" order="0" weight="0.24985285" />
       <window_info id="Favorites" order="1" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.09770453" />
+      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.10035315" />
       <window_info anchor="bottom" id="Messages" order="0" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" weight="0.12992701" />
@@ -726,14 +725,14 @@
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.329927" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" weight="0.32830188" />
-      <window_info anchor="bottom" id="Run" order="7" visible="true" weight="0.21132076" />
+      <window_info active="true" anchor="bottom" id="Run" order="7" visible="true" weight="0.2109489" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="10" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Debug" order="3" visible="true" weight="0.22748676" />
+      <window_info anchor="right" id="Debug" order="3" weight="0.22748676" />
       <window_info anchor="right" id="Key Promoter X" order="4" />
     </layout>
   </component>
@@ -787,7 +786,9 @@
     <MESSAGE value="pushed weights up" />
     <MESSAGE value="got ready for printing" />
     <MESSAGE value="added lab meeting files" />
-    <option name="LAST_COMMIT_MESSAGE" value="added lab meeting files" />
+    <MESSAGE value="changed velocity input to be a graded vector whose magnitude signifies degree of shift" />
+    <MESSAGE value="modified velocity input" />
+    <option name="LAST_COMMIT_MESSAGE" value="modified velocity input" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/W_h_aa.png">
@@ -810,12 +811,8 @@
     <entry file="file://$PROJECT_DIR$/lab_meeting/060/stationary/images/weights__.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/060/stationary/images/activity.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/060/stationary/images/weights.png" />
-    <entry file="file://$PROJECT_DIR$/lab_meeting/070/stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gold_copy/stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/gold_copy/stationary/images/activity.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/W_hidden_random.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/weights.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/W_h_initial.png">
@@ -824,12 +821,8 @@
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/W_i_b_initial.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/weights__.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/W_i_b_sorted.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -845,9 +838,7 @@
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/activity_stationary.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/gold_copy/non_stationary/images/activity.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting/images/activity_nonstationary.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -872,16 +863,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/curriculum.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="752">
-          <caret line="47" column="25" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/matplotlib/image.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -889,37 +870,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting/070/stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field_state.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/weights__.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/non_stationary/images/activity.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting/070/stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field_state.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field_support.png" />
+    <entry file="file://$PROJECT_DIR$/lab_meeting_inputs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="47" column="57" selection-start-line="47" selection-start-column="57" selection-end-line="47" selection-end-column="57" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="160">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/inputs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="957">
+          <caret line="136" column="41" selection-start-line="136" selection-start-column="41" selection-end-line="136" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights.png" />
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/activity.png" />
     <entry file="file://$PROJECT_DIR$/lab_meeting_weights.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
+        <state relative-caret-position="1008">
           <caret line="72" column="38" selection-start-line="72" selection-start-column="38" selection-end-line="72" selection-end-column="38" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -928,100 +904,94 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/receptive_field_support.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/activity.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights__.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analysis.py">
+    <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="142" column="49" lean-forward="true" selection-start-line="142" selection-start-column="49" selection-end-line="142" selection-end-column="49" />
+        <state relative-caret-position="672">
+          <caret line="47" column="57" selection-start-line="47" selection-start-column="57" selection-end-line="47" selection-end-column="57" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting_inputs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="10" column="13" lean-forward="true" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lab_meeting_activity.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="726">
-          <caret line="156" lean-forward="true" selection-start-line="156" selection-end-line="156" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="120" selection-start-line="120" selection-end-line="120" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <marker date="1542499670982" expanded="true" signature="2044:2045" ph="..." />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="906">
-          <caret line="114" column="27" selection-start-line="114" selection-start-column="27" selection-end-line="114" selection-end-column="27" />
+        <state relative-caret-position="666">
+          <caret line="116" column="34" selection-start-line="116" selection-start-column="34" selection-end-line="116" selection-end-column="34" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inputs.py">
+    <entry file="file://$PROJECT_DIR$/curriculum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="388">
-          <caret line="114" column="46" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
+        <state relative-caret-position="288">
+          <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="60" column="29" selection-start-line="60" selection-start-column="29" selection-end-line="60" selection-end-column="29" />
-          <folding>
-            <marker date="1542503103237" expanded="true" signature="425:434" ph="..." />
-            <marker date="1542503103237" expanded="true" signature="1258:1323" ph="..." />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/rnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="40" column="29" lean-forward="true" selection-start-line="40" selection-start-column="29" selection-end-line="40" selection-end-column="29" />
+        <state relative-caret-position="587">
+          <caret line="98" column="33" selection-start-line="98" selection-start-column="33" selection-end-line="98" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/stationary/images/weights__.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/stationary/images/activity.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1248">
+          <caret line="78" column="31" selection-start-line="78" selection-start-column="31" selection-end-line="78" selection-end-column="31" />
+          <folding>
+            <marker date="1542508142331" expanded="true" signature="425:434" ph="..." />
+            <marker date="1542508142331" expanded="true" signature="1259:1324" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="778">
+          <caret line="145" column="25" selection-start-line="145" selection-start-column="25" selection-end-line="145" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <marker date="1542508142335" expanded="true" signature="2041:2042" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="778">
+          <caret line="160" column="20" selection-start-line="160" selection-start-column="20" selection-end-line="160" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/non_stationary/images/weights__.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lab_meeting_activity.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-38">
+          <caret line="106" column="36" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

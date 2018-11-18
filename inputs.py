@@ -104,32 +104,26 @@ def create_inputs(opts):
         vel_ix = np.arange(velocity_start, time_steps, velocity_gap)
         vel_per_batch = len(vel_ix)
         vel_total = vel_per_batch * batch_size
-        vel_pos = np.linspace(1.,velocity_max, velocity_max)
-        vel_neg = np.linspace(-velocity_max, -1, velocity_max)
-        vel_options = np.hstack((vel_neg[velocity_use-1:], vel_pos[:velocity_use]))
+        vel_pos = np.linspace(1.,velocity_use, velocity_use)
+        vel_neg = np.linspace(-velocity_use, -1, velocity_use)
+        vel_options = np.hstack((vel_neg, vel_pos))
         print(vel_options)
 
-        vel_shifts_onehot = correlated_random(vel_options, size= vel_total)
-        vel_pos_onehot = np.copy(vel_shifts_onehot / velocity_max)
-        vel_pos_onehot[vel_shifts_onehot < 0] = 0
-        vel_neg_onehot = np.copy(vel_shifts_onehot / velocity_max)
-        vel_neg_onehot[vel_shifts_onehot > 0] = 0
+        vel_shifts = correlated_random(vel_options, size= vel_total)
+        vel_pos_onehot = np.copy(vel_shifts / velocity_max)
+        vel_pos_onehot[vel_shifts < 0] = 0
+        vel_neg_onehot = np.copy(vel_shifts / velocity_max)
+        vel_neg_onehot[vel_shifts > 0] = 0
         vel_neg_onehot = np.abs(vel_neg_onehot)
         vel_one_hot = np.vstack((vel_pos_onehot, vel_neg_onehot)).transpose()
-
-
         vel_one_hot = vel_one_hot.reshape(batch_size, vel_per_batch, one_hot_len)
+
         velocity = np.zeros((input.shape[0], input.shape[1], one_hot_len))
         velocity[:, vel_ix, :] = vel_one_hot
         input = np.concatenate([input, velocity], axis=2)
-
-        # vel_options = np.array([i for i in range(-velocity_max, velocity_max+1) if i != 0])
-        # shift = vel_options[vel_direction]
-        vel_shifts = vel_shifts_onehot.astype(int)
-        shift = vel_shifts.reshape(batch_size, vel_per_batch)
+        shift = vel_shifts.astype(int).reshape(batch_size, vel_per_batch)
 
         # create labels from input
-
         labels = [create_labels(x, s, vel_ix) for x, s in zip(input_unpadded, shift)]
         labels = np.stack(labels, axis=0)
     else:

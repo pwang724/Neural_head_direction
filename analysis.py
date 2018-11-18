@@ -99,7 +99,7 @@ def sort_weights(opts):
             ix0,ix1 = 0,1
 
         diff = W_i_b[ix0, :] - W_i_b[ix1, :]
-        weird_ix = np.all(W_i_b[ix0:ix1 + 1, :] < -1, axis=0)
+        weird_ix = np.all(W_i_b[ix0:ix1 + 1, :] < -.5, axis=0)
         diff[weird_ix] = 10
         sort_ix_1 = np.argsort(diff)
 

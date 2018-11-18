@@ -30,7 +30,7 @@ def create_placeholders(opts):
     if stationary:
         x = tf.placeholder(tf.float32, [None, time_steps, state_size], name='input_placeholder')
     else:
-        velocity_size = opts.velocity_max * 2
+        velocity_size = opts.velocity_size
         x = tf.placeholder(tf.float32, [None, time_steps, state_size + velocity_size],
                            name='input_placeholder')
     y = tf.placeholder(tf.float32, [None, time_steps, state_size], name='output_placeholder')
@@ -133,8 +133,8 @@ if __name__ == '__main__':
     st_model_opts = config.stationary_model_config()
     opts = st_model_opts
     opts.save_path = './test/stationary'
-    opts.epoch = 301
-    opts.rnn_size = 60
+    opts.epoch = 501
+    opts.load_checkpoint = False
     # train(opts)
 
     non_st_model_opts = config.non_stationary_model_config()
@@ -143,9 +143,8 @@ if __name__ == '__main__':
     opts.load_checkpoint = False
     opts.dir_weights = './test/stationary/weight.pkl'
     opts.epoch = 301
-    opts.rnn_size = 60
+    opts.velocity_use = 1
     opts.velocity_max = 1
-    opts.velocity_size = 2
     opts.load_checkpoint = False
     train(opts)
 
