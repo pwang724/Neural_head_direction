@@ -4,6 +4,7 @@ import numpy as np
 import os
 import json
 import matplotlib.cm as cm
+import pickle
 
 def save_parameters(opts, save_name):
     cur_dict = opts.__dict__
@@ -23,6 +24,25 @@ def load_parameters(save_path):
     for key, val in config_dict.items():
         setattr(config, key, val)
     return config
+
+def load_results(root_dir, subfile = None):
+    dir = os.path.join(root_dir, 'files')
+    dirs = [os.path.join(root_dir, dir, n) for n in os.listdir(dir)]
+    dirs = sorted(dirs)
+    xe_loss = []
+    loss = []
+    config = []
+    for i, d in enumerate(dirs):
+        if subfile is not None:
+            d = os.path.join(d,subfile)
+        config.append(load_parameters(os.path.join(d, 'parameters')))
+
+        log_name = os.path.join(d, 'log.pkl')
+        with open(log_name, 'rb') as f:
+            log = pickle.load(f)
+        xe_loss.append(log['xe_loss'])
+        loss.append(log['loss'])
+    return xe_loss, loss, config
 
 def subimage_easy(tup, col, row, save_name, vmin = -1, vmax = 1):
     """input: list of tuples

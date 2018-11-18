@@ -128,7 +128,6 @@ def initialize_weights(opts):
                 W_b_old = w_dict['model/hidden/W_b:0']
 
                 # fill with stretch
-                # W_h_aa_old_filled = np.copy(W_h_aa_old)
                 W_h_aa_old_filled = np.eye(W_h_aa_old.shape[0]) * 0.25
                 np.fill_diagonal(W_h_aa_old_filled, 1)
                 resized = np.zeros((rnn_size-state_size, state_size))
@@ -136,10 +135,16 @@ def initialize_weights(opts):
                 for i in range(rnn_size-state_size):
                     ix = (np.fabs(r - i)).argmin()
                     resized[i,:] = W_h_aa_old_filled[ix,:]
-                if opts.initialize_W_ab_diagonal:
-                    W_h_ab_old = resized.transpose()
-                if opts.initialize_W_ba_diagonal:
-                    W_h_ba_old = resized
+
+                if opts.shuffle_W_ab_ba:
+                    W_h_ab_old = np.random.choice(W_h_ab_old.flatten(), W_h_ab_old.shape)
+                    W_h_ba_old = np.random.choice(W_h_ba_old.flatten(), W_h_ba_old.shape)
+                    print('[!!!] Weights are shuffled')
+                else:
+                    if opts.initialize_W_ab_diagonal:
+                        W_h_ab_old = resized.transpose()
+                    if opts.initialize_W_ba_diagonal:
+                        W_h_ba_old = resized
 
                 sess.run(tf.assign(W_h_aa_tf, W_h_aa_old))
                 sess.run(tf.assign(W_h_ba_tf, W_h_ba_old))

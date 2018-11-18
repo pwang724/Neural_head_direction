@@ -81,6 +81,7 @@ class non_stationary_model_config(non_stationary_input_config):
         self.load_weights = True #load pre-trained weights using stationary input
         self.fix_weights = False
         self.dir_weights = './test/stationary/weight.pkl'
+        self.shuffle_W_ab_ba = False
         self.initialize_W_ab_diagonal = False
         self.initialize_W_ba_diagonal = False
 

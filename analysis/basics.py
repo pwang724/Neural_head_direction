@@ -173,7 +173,7 @@ def plot_sorted_weights(opts):
     utils.subimage_easy(zip(titles, data), col=2, row=4, save_name=plot_name)
 
 if __name__ == '__main__':
-    root = '../experiments/vary_weight_loss/files/00/'
+    root = '../experiments/vary_randomize_ab_ba/files/01/'
     d0 = root + 'stationary/'
     d1 = root + 'moving/'
 
@@ -182,7 +182,7 @@ if __name__ == '__main__':
             opts = utils.load_parameters(d + 'parameters')
             opts.save_path = d
             # plot_activity(opts)
-            # plot_weights(opts)
+            plot_weights(opts)
             plot_sorted_weights(opts)
 
             # if opts.stationary == 0:

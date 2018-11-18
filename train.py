@@ -133,6 +133,7 @@ if __name__ == '__main__':
     opts.epoch = 301
     opts.velocity_use = 1
     opts.velocity_max = 2
+    opts.shuffle_W_ab_ba = False
     train(opts)
 
 
