@@ -93,7 +93,7 @@ def subplot_easy(tup, legends, col, row, save_name):
     plt.close()
 
 def adjust(ax):
-    plt.style.use('dark_background')
+    # plt.style.use('dark_background')
     ax.spines["right"].set_visible(False)
     ax.spines["top"].set_visible(False)
     ax.xaxis.set_ticks_position('bottom')
@@ -107,7 +107,7 @@ def adjust(ax):
 def plot_weights(data, save_path, ylabel ='', xlabel= ''):
     rect = [0.15, 0.15, 0.65, 0.65]
     rect_cb = [0.82, 0.15, 0.02, 0.65]
-    plt.style.use('dark_background')
+    # plt.style.use('dark_background')
     fig = plt.figure(figsize=(4.0, 4.0))
     ax = fig.add_axes(rect)
 
@@ -133,8 +133,9 @@ def plot_weights(data, save_path, ylabel ='', xlabel= ''):
                 transparent=True)
 
 def plot_weights_simple(data, save_path, ylabel='',xlabel='', vmin= None, vmax= None):
+    print(plt.style.available)
     rect = [0.15, 0.15, 0.65, 0.65]
-    plt.style.use('dark_background')
+    # plt.style.use('seaborn-bright')
     fig = plt.figure(figsize=(4.0, 4.0))
     ax = fig.add_axes(rect)
 
@@ -155,7 +156,6 @@ def plot_weights_simple(data, save_path, ylabel='',xlabel='', vmin= None, vmax= 
     ax.set_yticks([0, data.shape[0]-1])
     plt.tick_params(axis='both', which='major')
     # plt.axis('image')
-    plt.savefig(save_path + '.png',
-                transparent=True)
+    plt.savefig(save_path + '.png')
 
 

@@ -121,20 +121,21 @@ if __name__ == '__main__':
     st_model_opts = config.stationary_model_config()
     opts = st_model_opts
     opts.save_path = './test/stationary'
-    opts.epoch = 501
-    opts.load_checkpoint = False
-    # train(opts)
+    opts.epoch = 300
+    opts.load_checkpoint = True
+    train(opts)
 
     non_st_model_opts = config.non_stationary_model_config()
     opts = non_st_model_opts
     opts.save_path = './test/non_stationary'
-    opts.load_checkpoint = False
+    opts.load_checkpoint = True
+    opts.load_weights = False
     opts.dir_weights = './test/stationary/weight.pkl'
-    opts.epoch = 301
-    opts.velocity_use = 1
+    opts.epoch = 500
+    opts.velocity_use = 2
     opts.velocity_max = 2
     opts.shuffle_W_ab_ba = False
-    train(opts)
+    # train(opts)
 
 
 

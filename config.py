@@ -41,11 +41,11 @@ class stationary_model_config(stationary_input_config):
     def __init__(self):
         super(stationary_model_config, self).__init__()
         self.stationary = True
-        self.weight_alpha = 0
+        self.weight_alpha = .5
         self.activity_alpha = .1
 
-        self.epoch = 501
-        self.batch_size = 25
+        self.epoch = 300
+        self.batch_size = 20
         self.learning_rate = .001
         self.time_loss_start = 4
         self.time_loss_end = 25
@@ -69,7 +69,7 @@ class non_stationary_model_config(non_stationary_input_config):
         super(non_stationary_model_config, self).__init__()
 
         self.stationary = False
-        self.weight_alpha = 1
+        self.weight_alpha = .5
         self.activity_alpha = .1
 
         self.epoch = 401

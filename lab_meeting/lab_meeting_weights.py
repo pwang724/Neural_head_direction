@@ -9,7 +9,7 @@ import inputs
 import pickle as pkl
 from analysis.basics import sort_weights
 
-path = './lab_meeting/images/'
+path = '../lab_meeting/images/'
 
 def plot_stationary_weights(opts, sort_ix):
     save_path = opts.save_path
@@ -39,37 +39,33 @@ def plot_nonstationary_weights(opts, sort_ix):
         weight_dict = pkl.load(f)
 
     # plot sorted_weights
-    if stationary:
-        W_h = weight_dict['model/hidden/W_h:0']
-        W_h_ab = W_h[:state_size, state_size:]
-        W_h_ba = W_h[state_size:, :state_size]
-        W_i_b_sorted = None
-        W_h_aa = W_h[:state_size, :state_size]
-        W_h_ab_sorted = W_h_ab[:, sort_ix]
-        W_h_ba_sorted = W_h_ba[sort_ix, :]
-    else:
-        W_h_aa = weight_dict['model/hidden/W_h_aa:0']
-        W_h_bb = weight_dict['model/hidden/W_h_bb:0']
-        W_h_ab = weight_dict['model/hidden/W_h_ab:0']
-        W_h_ba = weight_dict['model/hidden/W_h_ba:0']
+    W_h_aa = weight_dict['model/hidden/W_h_aa:0']
+    W_h_bb = weight_dict['model/hidden/W_h_bb:0']
+    W_h_ab = weight_dict['model/hidden/W_h_ab:0']
+    W_h_ba = weight_dict['model/hidden/W_h_ba:0']
+    W_h_ab_sorted = W_h_ab[:, sort_ix]
+    W_h_ba_sorted = W_h_ba[sort_ix, :]
+
+    left = np.vstack((W_h_aa, W_h_ba_sorted))
+    right = np.vstack((W_h_ab_sorted, W_h_bb))
+    W_h_sorted = np.hstack((left,right))
+
+    left = np.vstack((W_h_aa, W_h_ba))
+    right = np.vstack((W_h_ab, W_h_bb))
+    W_h = np.hstack((left,right))
+
+    if opts.stationary == 0:
         W_i_b = weight_dict['model/input/W_i_b:0']
         W_i_b_sorted = W_i_b[:, sort_ix]
 
-        W_h_ab_sorted = W_h_ab[:, sort_ix]
-        W_h_ba_sorted = W_h_ba[sort_ix, :]
-
-        left = np.vstack((W_h_aa, W_h_ba_sorted))
-        right = np.vstack((W_h_ab_sorted, W_h_bb))
-        W_h = np.hstack((left,right))
-
-    #hack
-    if W_i_b_sorted.shape[0]>2:
-        W_i_b_sorted = W_i_b_sorted[2:4,:]
-
-    plot_weights_simple(W_h, path + 'W_h')
-    plot_weights_simple(W_h_aa, path + 'W_h_aa')
-    plot_weights_simple(W_h_ab_sorted, path + 'W_h_ab_sorted')
-    plot_weights_simple(W_h_ba_sorted, path + 'W_h_ba_sorted')
+    vmin = -1
+    vmax = 1
+    plot_weights_simple(W_h_sorted, path + 'W_h_sorted',vmin = vmin, vmax=vmax)
+    plot_weights_simple(W_h, path + 'W_h', vmin = vmin, vmax = vmax)
+    plot_weights_simple(W_h_aa, path + 'W_h_aa', 'From Ring Neuron', 'To Ring Neuron',
+                        vmin = vmin, vmax = vmax)
+    plot_weights_simple(W_h_ab_sorted, path + 'W_h_ab_sorted', vmin = vmin, vmax = vmax)
+    plot_weights_simple(W_h_ba_sorted, path + 'W_h_ba_sorted', vmin = vmin, vmax = vmax)
     if not stationary:
         plot_weights_simple(W_i_b_sorted, path + 'W_i_b_sorted')
 
@@ -92,12 +88,12 @@ if __name__ == '__main__':
 
     # plot_input_output_weights_stationary()
 
-    opts = utils.load_parameters('./test/stationary/parameters')
-    opts.save_path = './test/stationary/'
+    opts = utils.load_parameters('../test/stationary/parameters')
+    opts.save_path = '../test/stationary/'
     sort_ix = sort_weights(opts)
     plot_stationary_weights(opts, sort_ix)
 
-    # opts = utils.load_parameters('./test/non_stationary/parameters')
-    # opts.save_path = './test/non_stationary/'
+    # opts = utils.load_parameters('../test/non_stationary/parameters')
+    # opts.save_path = '../test/non_stationary/'
     # sort_ix = sort_weights(opts)
-    # plot_nonstationary_weights(opts, sort_ix)
+    plot_nonstationary_weights(opts, sort_ix)
