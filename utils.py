@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -9,6 +11,8 @@ import pickle
 def save_parameters(opts, save_name):
     cur_dict = opts.__dict__
     cur_dict = {k: v for k, v in cur_dict.items() if k[:2] != '__'}
+
+    # save_name = save_name + '_' + opts.losses
     with open(save_name + '.json', 'w') as f:
         json.dump(cur_dict, f)
 
@@ -25,11 +29,11 @@ def load_parameters(save_path):
         setattr(config, key, val)
     return config
 
-def load_results(root_dir, subfile = None):
+def load_results(root_dir, subfile=None):
     dir = os.path.join(root_dir, 'files')
     dirs = [os.path.join(root_dir, dir, n) for n in os.listdir(dir)]
     dirs = sorted(dirs)
-    xe_loss = []
+    mse_loss = []
     loss = []
     config = []
     for i, d in enumerate(dirs):
@@ -40,11 +44,18 @@ def load_results(root_dir, subfile = None):
         log_name = os.path.join(d, 'log.pkl')
         with open(log_name, 'rb') as f:
             log = pickle.load(f)
-        xe_loss.append(log['xe_loss'])
+        mse_loss.append(log['mse_loss'])
         loss.append(log['loss'])
     return xe_loss, loss, config
 
-def subimage_easy(tup, col, row, save_name, vmin = -1, vmax = 1):
+def hide_ticks(ax):
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+def subimage_easy(tup, col, row, save_name, cbar=False, vmin=-1, vmax=1, tight_axes=False, image=False, orderC=True,
+                  ax_op=['off', 'image'], fontsize=None):
     """input: list of tuples
     first arg of each tuple: title
     second arg of each tuple: matrix to plot
@@ -52,44 +63,127 @@ def subimage_easy(tup, col, row, save_name, vmin = -1, vmax = 1):
     c, r = 0, 0
     fig, ax = plt.subplots(nrows=row, ncols=col)
     for t, w in tup:
-        if np.ndim(w) == 1:
-            w = w.reshape(1,-1)
-        sns.heatmap(w, cmap='RdBu_r', vmin=vmin, vmax=vmax, ax=ax[r, c],
-                    cbar=False)
+        if row > 1 and col > 1:
+            cur_axis = ax[r, c]
+        elif row > 1 or col > 1:
+            cur_axis = ax[c]
+        else:
+            cur_axis = ax
+
+        if len(w.shape) < 2:
+            w = np.expand_dims(w, 0)
+
+        plt.sca(cur_axis)
+        # sns.heatmap(w, cmap='RdBu_r', ax=ax[r, c], cbar=cbar, center=0)
+        sns.heatmap(w, cmap='RdBu_r', vmin=vmin, vmax=vmax, ax=cur_axis, cbar=cbar, center=0)
         if t != '':
-            ax[r, c].set_title(t)
-        ax[r, c].axis('off')
-        ax[r, c].axis('image')
-        c += 1
-        if c >= col:
+            if fontsize:
+                cur_axis.set_title(t, fontsize=fontsize)
+            else:
+                cur_axis.set_title(t)
+
+        # cur_axis.axis('off')
+        # if image:
+        #     cur_axis.axis('image')
+
+        if ax_op:  # ['off', 'image'], etc
+            for op in ax_op:
+                cur_axis.axis(op)
+
+        if orderC:
+            c += 1
+            if c >= col:
+                r += 1
+                c = 0
+        else:
             r += 1
-            c = 0
-    fig.savefig(save_name, bbox_inches='tight', figsize = (14,10), dpi=500)
+            if r >= row:
+                c += 1
+                r = 0
+
+    if tight_axes:
+        plt.tight_layout()
+    fig.savefig(save_name, bbox_inches='tight', figsize=(14, 10), dpi=500)
     plt.close()
 
-def subplot_easy(tup, legends, col, row, save_name):
+def subplot_easy(tup, col, row, save_name, xlim=None, ylim=None, hide_ticks=False, ax_op=[],
+                 suptitle=None, legends=None, scatter=False, tight_axes=False, scatter_size=None, orderC=True):
     """input: list of tuples
     first arg of each tuple: title
     second arg of each tuple: matrix to plot
     """
-    colors = cm.jet(np.linspace(0,1,len(legends)))
-    cyc = plt.cycler('color', colors)
-    # cmap = plt.get_cmap('jet')
-    # colors = [cmap(i) for i in np.linspace(0, 1, len(legends))]
+    if legends:
+        colors = cm.jet(np.linspace(0, 1, len(legends)))
+        cyc = plt.cycler('color', colors)
+        # cmap = plt.get_cmap('jet')
+        # colors = [cmap(i) for i in np.linspace(0, 1, len(legends))]
 
     c, r = 0, 0
-    fig, ax = plt.subplots(nrows=row, ncols=col, figsize=(10,10))
+    fig, ax = plt.subplots(nrows=row, ncols=col)
+    if suptitle:
+        plt.suptitle(suptitle)
+
+    def multiplot(ax, mat):
+        try:
+            if len(np.squeeze(mat).shape) == 1:
+                ax.plot(mat, linewidth=.5)
+            else:
+                if scatter:
+                    ax.scatter(mat[:, 0], mat[:, 1], s=scatter_size)
+                else:
+                    ax.plot(mat[:, 0], mat[:, 1], linewidth=.5)
+
+        except TypeError:
+            print(mat)
+            print("Plotting error - pass the data to be plotted as a numpy array or as a list of numpy arrays.")
+
     for t, w in tup:
-        ax[r, c].set_prop_cycle(cyc)
-        ax[r, c].plot(w)
-        ax[r, c].set_title(t)
-        ax[r, c].legend(legends)
-        c += 1
-        if c >= col:
+        if row > 1 and col > 1:
+            cur_axis = ax[r, c]
+        elif row > 1 or col > 1:
+            cur_axis = ax[c]
+        else:
+            cur_axis = ax
+
+        if isinstance(w, list) or isinstance(w, tuple):
+            # multiple data for each plot
+            for mat in w:
+                multiplot(cur_axis, mat)
+        else:
+            multiplot(cur_axis, w)
+
+        if legends:
+            cur_axis.legend(legends)
+
+        if t:  # t can be '', None for False
+            cur_axis.set_title(t)
+        if xlim:
+            cur_axis.set_xlim(xlim[0], xlim[1])
+        if ylim:
+            cur_axis.set_ylim(ylim[0], ylim[1])
+        if hide_ticks:
+            cur_axis.set_xticklabels([])
+            cur_axis.set_yticklabels([])
+            cur_axis.set_xticks([])
+            cur_axis.set_yticks([])
+        if ax_op:
+            for op in ax_op:
+                cur_axis.axis(op)
+
+        if orderC:
+            c += 1
+            if c >= col:
+                r += 1
+                c = 0
+        else:
             r += 1
-            c = 0
-    plt.tight_layout()
-    fig.savefig(save_name, bbox_inches='tight')
+            if r >= row:
+                c += 1
+                r = 0
+
+    if tight_axes:
+        plt.tight_layout()
+    fig.savefig(save_name + '.png', bbox_inches='tight', figsize=(10, 10), dpi=500)
     plt.close()
 
 def adjust(ax):
@@ -113,7 +207,7 @@ def plot_weights(data, save_path, ylabel ='', xlabel= ''):
 
     adjust(ax)
     vlim = np.round(np.max(abs(data)), decimals=1)
-    im = ax.imshow(data, cmap= 'RdBu_r', vmin=-vlim, vmax=vlim,
+    im = ax.imshow(data, cmap='RdBu_r', vmin=-vlim, vmax=vlim,
                    interpolation='none')
     plt.axis('tight')
     for loc in ['bottom', 'top', 'left', 'right']:
