@@ -6,10 +6,27 @@ class weight_names():
         for k in l:
             setattr(self, k, k)
 
-class shared_config(object):
+class BaseConfig(object):
+    def __init__(self):
+        pass
+
+    def update(self, new_config):
+        self.__dict__.update(new_config.__dict__)
+
+    def __str__(self):
+        return str(self.__dict__)
+
+class shared_config(BaseConfig):
     """config for input parameters that are shared
     between both stationary and non-stationary inputs"""
     def __init__(self):
+        super(BaseConfig, self).__init__()
+        self.rng_seed = 0
+        self.ttype = 'float'
+        self.print_epoch_interval = 5
+        self.save_epoch_interval = 100
+
+
         self.state_size = 36  # size of position input, not the hidden layer
         self.rnn_size = 100
         self.bump_size = 1
@@ -58,8 +75,10 @@ class stationary_input_config(shared_config):
     def __init__(self):
         super(stationary_input_config, self).__init__()
         self.velocity = False
+        self.subtrack = False
+        self.boundary_velocity = False
 
-class stationary_model_config(stationary_input_config):
+class stationary_model_config(shared_config):
     def __init__(self):
         super(stationary_model_config, self).__init__()
         self.stationary = True
@@ -99,7 +118,7 @@ class non_stationary_input_config(shared_config):
         self.n_env = 10
         self.rescale_env = True  # make the boundaries 0 and 360 deg for all environments
 
-class non_stationary_model_config(non_stationary_input_config):
+class non_stationary_model_config(shared_config):
     def __init__(self):
         super(non_stationary_model_config, self).__init__()
 

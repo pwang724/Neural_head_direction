@@ -191,16 +191,19 @@ def create_inputs(opts, training=True):
     noise_density = opts.noise_density
     noise_intensity = opts.noise_intensity
 
-    velocity = opts.velocity
     input_mode = opts.input_mode
     output_mode = opts.output_mode
-    boundary_velocity = opts.boundary_velocity
-    correlated_path = opts.correlated_path
+
+    velocity = opts.velocity
+    if velocity:
+        boundary_velocity = opts.boundary_velocity
+        correlated_path = opts.correlated_path
 
     subtrack = opts.subtrack
-    subtrack_minlen = opts.subtrack_minlen
-    subtrack_maxlen = opts.subtrack_maxlen
-    rescale_env = opts.rescale_env
+    if subtrack:
+        subtrack_minlen = opts.subtrack_minlen
+        subtrack_maxlen = opts.subtrack_maxlen
+        rescale_env = opts.rescale_env
 
     nav_output = opts.nav_output  # navigational output, direction and distance to a home spot
     home = opts.home
@@ -210,7 +213,7 @@ def create_inputs(opts, training=True):
         home = np.random.randint(env_size)
 
     pi = np.pi
-    if subtrack:
+    if velocity and subtrack:
         subtrack_len = np.random.randint(low=subtrack_minlen, high=subtrack_maxlen)
         print(f'\nsubtrack length: {subtrack_len}')
         lo = np.random.randint(env_size-subtrack_len)
@@ -275,8 +278,9 @@ def create_inputs(opts, training=True):
         rescale = pi * 2 / (hi-lo)
         scale = np.pi * 2 / env_size
         posn = np.argmax(labels, axis=1)
-        if rescale_env:
-            trig_posn = rescale * (posn-lo)
+        if subtrack:
+            if rescale_env:
+                trig_posn = rescale * (posn-lo)
         else:
             trig_posn = scale * posn
 
