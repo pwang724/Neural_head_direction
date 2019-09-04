@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import inputs
+from datasets import inputs
 import os, time
 import pickle as pkl
 import utils as utils

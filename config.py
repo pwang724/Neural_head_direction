@@ -28,15 +28,16 @@ class shared_config(BaseConfig):
 
 
         self.state_size = 36  # size of position input, not the hidden layer
-        self.rnn_size = 100
-        self.bump_size = 1
-        self.bump_std = 1.5
+        self.discrete = True
+        self.bump_size = 5
+        self.bump_std = 1
 
+        self.rnn_size = 100
         self.n_input = 1000
         self.time_steps = 25
 
         self.noise = True
-        self.noise_intensity = .1
+        self.noise_intensity = .05
         self.noise_density = .5
 
         self.mask = True
@@ -51,9 +52,9 @@ class shared_config(BaseConfig):
         self.testing = False
 
         self.activation_fn = 'relu'  # [relu, relu6, tanh]
-        self.output_mode = 'trig'  # ['bump', 'trig', 'scalar']
+        self.output_mode = 'trig'  # ['bump', 'trig', 'onehot']
         self.linear_track = True
-        self.input_mode = 'bump'  # ['bump', 'scalar', 'trig']
+        self.input_mode = 'trig'  # ['bump', 'trig', 'onehot']
         self.bump_in_network = False
 
         self.dropout = False
@@ -65,7 +66,9 @@ class shared_config(BaseConfig):
         self.nav_output = False
         self.home = None
 
-        self.nonneg_input = False
+        self.non_negative_input = True
+        self.non_negative_output = True
+
         self.EI_in = False
         self.EI_h = False
         self.EI_out = False
@@ -98,17 +101,14 @@ class non_stationary_input_config(shared_config):
     """config for non-stationary training"""
     def __init__(self):
         super(non_stationary_input_config, self).__init__()
+        self.velocity_max = 30 #degrees
+
         self.velocity = True
         self.velocity_start = 5
         self.velocity_gap = 3
-        self.velocity_step = 1
-        self.velocity_min = 1
-        self.velocity_max = 2
-        self.velocity_size = 2
         self.time_steps = 25
 
         self.boundary_velocity = False
-        self.correlated_path = True
         self.grid_input = False
 
         # subtrack, for use with ipt size 72 and up

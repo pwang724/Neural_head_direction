@@ -1,11 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
-import config
 import utils
-from utils import plot_weights, plot_weights_simple
+from utils import plot_weights_simple
 import os
-import inputs
 import pickle as pkl
 from analysis.basics import sort_weights
 

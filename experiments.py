@@ -1,9 +1,7 @@
 import tensorflow as tf
 import numpy as np
-import inputs
 import os
 import pickle as pkl
-import utils as utils
 import config
 from tf_rnn import RNN
 import tf_train as train

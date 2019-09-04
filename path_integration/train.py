@@ -2,11 +2,10 @@ import numpy as np
 import tensorflow as tf
 import model
 from config import Options
-import inputs as inputs_helper
+from datasets import inputs as inputs_helper
 import utils
 # import matplotlib as mpl
 # mpl.use('TkAgg')
-import matplotlib.pyplot as plt
 import time
 
 

@@ -1,15 +1,10 @@
 import numpy as np
-from scipy.stats import norm
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-import matplotlib.ticker as ticker
-import seaborn as sns
 import config
 from utils import adjust
-import utils
 import os
-import inputs
-import pickle as pkl
+from datasets import inputs
+
 
 def plot_moving_inputs(inputs, labels, opts):
     rc = (2,3)
