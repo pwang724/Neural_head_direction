@@ -172,7 +172,4 @@ if __name__ == '__main__':
     print(labels.shape)
 
     datasets.plot.plot_stationary_inputs(inputs, labels, opts)
-    # plot_moving_inputs(inputs, labels, opts)
-    # plot_nonneg(inputs, labels, opts)
-    # plot_scalar_inputs(inputs, labels, vel_ipt, non_stationary)
 
