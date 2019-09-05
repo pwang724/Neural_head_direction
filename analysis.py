@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import utils
 import os
-import config
 import pickle as pkl
 from scipy.interpolate import griddata
-import seaborn as sns
 import pandas as pd
-import tables
 import re
 from collections import defaultdict
-import tf_train as train
+from old import tf_train as train
+
+
 # os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 

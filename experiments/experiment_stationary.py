@@ -1,7 +1,7 @@
 """A collection of experiments."""
 
 import os
-import train
+from old import train
 from collections import OrderedDict
 import numpy as np
 import config

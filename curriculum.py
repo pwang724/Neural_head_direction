@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import pickle as pkl
 import analysis
-import tf_train
+from old import tf_train
 import config
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'

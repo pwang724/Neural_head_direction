@@ -3,12 +3,9 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle as pkl
-import os, tables, re
-from scipy.interpolate import griddata
+import os
 import utils
-import config
-import pandas as pd
-import tf_train as train
+
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 import analysis
 import experiments

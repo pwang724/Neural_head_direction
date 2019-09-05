@@ -1,5 +1,5 @@
 import tensorflow as tf
-from abstract_model import Model
+from old.abstract_model import Model
 import numpy as np
 EPS = np.finfo(float).eps
 

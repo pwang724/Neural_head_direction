@@ -5,9 +5,9 @@ import os
 import pickle as pkl
 
 import utils as utils
-import rnn as rnn_helper
+from old import rnn as rnn_helper
 import config
-from model import RNN
+from old.model import RNN
 from collections import defaultdict
 
 # set seed for reproducibility

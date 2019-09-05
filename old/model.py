@@ -1,9 +1,9 @@
 import tensorflow as tf
 import os
 import pickle as pkl
-import rnn as rnn_helper
+from old import rnn as rnn_helper
 import config
-import utils
+
 
 class Model(object):
     '''abstract model class'''

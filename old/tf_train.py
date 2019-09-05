@@ -5,7 +5,7 @@ import os, time
 import pickle as pkl
 import utils as utils
 import config
-from tf_rnn import RNN
+from old.tf_rnn import RNN
 from collections import defaultdict
 
 # set seed for reproducibility

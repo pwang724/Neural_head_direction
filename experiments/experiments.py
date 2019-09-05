@@ -3,8 +3,8 @@ import numpy as np
 import os
 import pickle as pkl
 import config
-from tf_rnn import RNN
-import tf_train as train
+from old.tf_rnn import RNN
+from old import tf_train as train
 
 
 def silence(opts, group, data=None):

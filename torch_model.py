@@ -3,8 +3,7 @@ from torch import nn as nn
 import torch
 import os
 import json
-import torch.nn.functional as F
-
+import matplotlib.pyplot as plt
 import config
 
 class Abstract_Model(nn.Module):
@@ -61,15 +60,22 @@ class Simple_Model(Abstract_Model):
         self.batch_size = config.batch_size
         self.config = config
 
-        self.i2h = nn.Linear(isize + config.rnn_size, config.rnn_size)
+        self.i2h = nn.Linear(isize, config.rnn_size)
+        self.h_w = torch.nn.Parameter(.01 * torch.rand(config.rnn_size, config.rnn_size))
+        self.h_b = torch.nn.Parameter(.01 * torch.rand(config.rnn_size))
+        mask = np.ones((config.rnn_size, config.rnn_size)).astype(np.float32)
+        np.fill_diagonal(mask, 0)
+        mask = torch.from_numpy(mask)
+        self.h_mask = torch.nn.Parameter(mask)
         self.h2o = torch.nn.Linear(config.rnn_size, osize)
-        # self.softmax = torch.nn.Softmax(dim=1)
+
 
     def forward(self, input, hidden):
-        combined = torch.cat((input, hidden), 1)
-        hidden = torch.tanh(self.i2h(combined))
+        i = self.i2h(input)
+        effective_h_w = torch.mul(self.h_w, self.h_mask)
+        h = torch.matmul(hidden, effective_h_w)
+        hidden = torch.relu(i + h)
         out = self.h2o(hidden)
-        # out = self.softmax(out)
         return hidden, out
 
     def initialZeroState(self):

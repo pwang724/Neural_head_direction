@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import model
+from old import model
 from config import Options
 from datasets import inputs as inputs_helper
 import utils

@@ -30,12 +30,11 @@ def torch2numpy(x):
 def _initialize(save_path, reload, set_seed):
     if reload:  #use old model and new inputs
         opts = torch_model.load_config(save_path)
-        new_input_config = config.shared_config()
+        new_input_config = config.inputConfig()
         opts.update(new_input_config)
     else:
-        opts = config.shared_config()
-        opts.update(config.non_stationary_model_config())
-        opts.update(config.non_stationary_input_config())
+        opts = config.inputConfig()
+        opts.update(config.modelConfig())
 
     np.set_printoptions(precision=2)
     if set_seed:
@@ -163,7 +162,7 @@ def evaluate(save_path, log):
 
 
 if __name__ == "__main__":
-    c = config.non_stationary_model_config()
+    c = config.modelConfig()
     train(save_path=c.save_path, reload = False, set_seed=True)
     #
     # evaluate(save_path=c.save_path, log=True)

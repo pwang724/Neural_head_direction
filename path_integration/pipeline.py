@@ -1,9 +1,8 @@
 import numpy as np
-import train
+from old import train
 # import matplotlib as mpl
 # mpl.use('TkAgg')
 import matplotlib.pyplot as plt
-import seaborn as sns
 from config import Options
 import utils
 
