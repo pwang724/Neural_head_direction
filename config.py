@@ -77,6 +77,8 @@ class modelConfig(BaseConfig):
         self.weight_alpha = .1
         self.activity_alpha = .1
         self.activation_fn = 'relu'  # [relu, relu, tanh]
+        self.constrained = True
+
 
         self.EI = False
         self.prop_ex = .8
@@ -84,20 +86,20 @@ class modelConfig(BaseConfig):
         self.EI_h = False
         self.EI_out = False
 
-        self.load_checkpoint = False  # load checkpoint, overrides load_weights
+        self.reload = True  # load checkpoint, overrides load_weights
         self.save_path = './_DATA/test'
         self.use_velocity = True
 
         self.ttype = 'float'
         self.print_epoch_interval = 5
-        self.save_epoch_interval = 100
+        self.save_epoch_interval = 20
 
         self.debug_weights = False
 
         #DEPRECATED
-        self.load_weights = False  # load pre-trained weights using stationary input
-        self.fix_weights = False
-        self.losses = 'error'  # choose from error, activity, weights, full
+        # self.load_weights = False  # load pre-trained weights using stationary input
+        # self.fix_weights = False
+        # self.losses = 'error'  # choose from error, activity, weights, full
 
 if __name__ == '__main__':
     a = inputConfig()

@@ -52,7 +52,10 @@ def _initialize(save_path, reload, set_seed):
 
     dataset = InputDataset(opts)
     data_loader = DataLoader(dataset, batch_size= opts.batch_size, shuffle=True)
-    net = torch_model.Simple_Model(config=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
+    if not opts.constrained:
+        net = torch_model.Simple_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
+    else:
+        net = torch_model.Constrained_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
 
     if reload:
         net.load(name='net')
@@ -90,7 +93,7 @@ def train(save_path, reload, set_seed = True):
                 hidden, out = net(xt, hidden)
                 if t >= t_loss_start and t <= t_loss_end:
                     loss_activity += opts.activity_alpha * torch.mean(torch.pow(hidden,2))
-                    loss_weight += opts.weight_alpha * torch.mean(torch.pow(net.i2h.weight,2)) #fix
+                    loss_weight += opts.weight_alpha * torch.mean(torch.pow(net.h_w,2)) #fix
                     loss_pred += criterion(out, yt)
 
             loss = loss_pred + loss_weight + loss_activity
@@ -163,6 +166,6 @@ def evaluate(save_path, log):
 
 if __name__ == "__main__":
     c = config.modelConfig()
-    train(save_path=c.save_path, reload = False, set_seed=True)
+    train(save_path=c.save_path, reload = c.reload, set_seed=True)
     #
     # evaluate(save_path=c.save_path, log=True)

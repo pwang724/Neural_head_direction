@@ -53,33 +53,75 @@ class Abstract_Model(nn.Module):
 
 
 class Simple_Model(Abstract_Model):
-    def __init__(self, config, isize, osize):
-        super(Simple_Model, self).__init__(config.save_path)
+    def __init__(self, opts, isize, osize):
+        super(Simple_Model, self).__init__(opts.save_path)
 
-        self.hidden_size = config.rnn_size
-        self.batch_size = config.batch_size
-        self.config = config
+        self.hidden_size = opts.rnn_size
+        self.batch_size = opts.batch_size
+        self.config = opts
 
-        self.i2h = nn.Linear(isize, config.rnn_size)
-        self.h_w = torch.nn.Parameter(.01 * torch.rand(config.rnn_size, config.rnn_size))
-        self.h_b = torch.nn.Parameter(.01 * torch.rand(config.rnn_size))
-        mask = np.ones((config.rnn_size, config.rnn_size)).astype(np.float32)
+        self.i2h = nn.Linear(isize, opts.rnn_size)
+        self.h_b = torch.nn.Parameter(.01 * torch.rand(opts.rnn_size))
+        self.h_w = torch.nn.Parameter(.01 * torch.rand(opts.rnn_size, opts.rnn_size))
+        mask = np.ones((opts.rnn_size, opts.rnn_size)).astype(np.float32)
         np.fill_diagonal(mask, 0)
         mask = torch.from_numpy(mask)
-        self.h_mask = torch.nn.Parameter(mask)
-        self.h2o = torch.nn.Linear(config.rnn_size, osize)
-
+        h_mask = torch.nn.Parameter(mask, requires_grad = False)
+        self.h_mask = h_mask
+        self.h2o = torch.nn.Linear(opts.rnn_size, osize)
 
     def forward(self, input, hidden):
         i = self.i2h(input)
-        effective_h_w = torch.mul(self.h_w, self.h_mask)
-        h = torch.matmul(hidden, effective_h_w)
-        hidden = torch.relu(i + h)
+        h_effective = torch.mul(self.h_w, self.h_mask)
+        h = torch.matmul(hidden, h_effective)
+        hidden = torch.relu(i + h + self.h_b)
         out = self.h2o(hidden)
         return hidden, out
 
     def initialZeroState(self):
         return torch.zeros(self.batch_size, self.hidden_size)
+
+class Constrained_Model(Abstract_Model):
+    def __init__(self, opts, isize, osize):
+        super(Constrained_Model, self).__init__(opts.save_path)
+
+        self.hidden_size = opts.rnn_size
+        self.batch_size = opts.batch_size
+        self.config = opts
+
+        input_position_size = isize - 2
+        input_velocity_size = 2
+        hidden_attractor_size = opts.state_size
+        hidden_shift_size = opts.rnn_size - opts.state_size
+
+        self.position2attractor = nn.Linear(input_position_size, hidden_attractor_size)
+        self.velocity2shift = nn.Linear(input_velocity_size, hidden_shift_size)
+
+        self.h_w = torch.nn.Parameter(.01 * torch.rand(opts.rnn_size, opts.rnn_size))
+        self.h_b = torch.nn.Parameter(.01 * torch.rand(opts.rnn_size))
+
+        mask = np.ones((opts.rnn_size, opts.rnn_size)).astype(np.float32)
+        np.fill_diagonal(mask, 0)
+        mask[opts.state_size:, opts.state_size:] = 0
+        mask = torch.from_numpy(mask)
+        h_mask = torch.nn.Parameter(mask, requires_grad=False)
+        self.h_mask = h_mask
+        self.h2o = torch.nn.Linear(opts.rnn_size, osize)
+
+    def forward(self, input, hidden):
+        i_attractor = self.position2attractor(input[:,:-2])
+        i_shift = self.velocity2shift(input[:,-2:])
+        i = torch.cat((i_attractor, i_shift), dim=1)
+
+        h_effective = torch.mul(self.h_w, self.h_mask)
+        h = torch.matmul(hidden, h_effective)
+        hidden = torch.relu(i + h + self.h_b)
+        out = self.h2o(hidden)
+        return hidden, out
+
+    def initialZeroState(self):
+        return torch.zeros(self.batch_size, self.hidden_size)
+
 
 
 def load_config(save_path, epoch=None):
@@ -89,7 +131,7 @@ def load_config(save_path, epoch=None):
     with open(os.path.join(save_path, 'config.json'), 'r') as f:
         config_dict = json.load(f)
 
-    c = config.shared_config()
+    c = config.modelConfig()
     for key, val in config_dict.items():
         setattr(c, key, val)
     return c
