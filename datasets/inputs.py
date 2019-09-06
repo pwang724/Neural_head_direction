@@ -150,11 +150,7 @@ def create_inputs(opts):
 
 
 if __name__ == '__main__':
-    stationary = config.stationary_input_config()
-    non_stationary = config.non_stationary_input_config()
-
-    opts = stationary
-    opts = non_stationary
+    opts = config.inputConfig()
 
     opts.time_steps = 50
     opts.bump_size = 3
