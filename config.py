@@ -28,7 +28,7 @@ class inputConfig(BaseConfig):
         super(inputConfig, self).__init__()
         self.state_size = 36  # size of position input, not the hidden layer
         self.n_input = 1000
-        self.time_steps = 25
+        self.time_steps = 50
 
         self.input_mode = 'trig'  # ['bump', 'trig', 'onehot']
         self.output_mode = 'trig'  # ['bump', 'trig', 'onehot']
@@ -48,6 +48,8 @@ class inputConfig(BaseConfig):
         self.velocity_max = 30 #degrees
         self.velocity_start = 5
         self.velocity_gap = 3
+        self.stop_probability = 0
+        self.velocity_onehot = True
 
         #DEPRECATED
         # self.linear_track = True
@@ -67,7 +69,8 @@ class modelConfig(BaseConfig):
         super(modelConfig, self).__init__()
         self.learning_rate = .001
         self.batch_size = 20
-        self.epoch = 401
+        self.test_batch_size = 1000
+        self.epoch = 201
         self.time_loss_start = 5
         self.time_loss_end = 20
 
@@ -77,22 +80,21 @@ class modelConfig(BaseConfig):
         self.weight_alpha = .1
         self.activity_alpha = .1
         self.activation_fn = 'relu'  # [relu, relu, tanh]
-        self.constrained = True
-
+        self.constrained = False
 
         self.EI = False
         self.prop_ex = .8
-        self.EI_in = False
-        self.EI_h = False
-        self.EI_out = False
+        # self.EI_in = False
+        # self.EI_h = False
+        # self.EI_out = False
 
-        self.reload = True  # load checkpoint, overrides load_weights
+        self.reload = False  # load checkpoint, overrides load_weights
         self.save_path = './_DATA/test'
         self.use_velocity = True
 
         self.ttype = 'float'
         self.print_epoch_interval = 5
-        self.save_epoch_interval = 20
+        self.save_epoch_interval = 100
 
         self.debug_weights = False
 

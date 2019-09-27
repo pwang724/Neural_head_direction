@@ -37,3 +37,7 @@ def _nice_figures(ax):
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
     ax.tick_params(direction='out', length=1, width=.5)
+
+
+def torch2numpy(x):
+    return x.detach().cpu().numpy()

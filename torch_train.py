@@ -12,6 +12,9 @@ import config
 from collections import defaultdict
 
 from torch.utils.data import Dataset, DataLoader
+from tools import torch2numpy
+
+
 class InputDataset(Dataset):
     def __init__(self, opts):
         X, Y = inputs.create_inputs(opts)
@@ -24,17 +27,11 @@ class InputDataset(Dataset):
     def __getitem__(self, idx):
         return (self.X[idx], self.Y[idx])
 
-def torch2numpy(x):
-    return x.detach().cpu().numpy()
 
-def _initialize(save_path, reload, set_seed):
-    if reload:  #use old model and new inputs
-        opts = torch_model.load_config(save_path)
-        new_input_config = config.inputConfig()
-        opts.update(new_input_config)
-    else:
-        opts = config.inputConfig()
-        opts.update(config.modelConfig())
+def _initialize(modelConfig, reload, set_seed, test=False):
+    assert modelConfig.EI + modelConfig.constrained < 2, "Cannot construct constrained model with EI option"
+    opts = config.inputConfig()
+    opts.update(modelConfig)
 
     np.set_printoptions(precision=2)
     if set_seed:
@@ -42,6 +39,10 @@ def _initialize(save_path, reload, set_seed):
         np.random.seed(seed)
         random.seed(seed)
         torch.manual_seed(seed)
+
+    if test:
+        assert opts.test_batch_size <= opts.n_input
+        opts.batch_size = opts.test_batch_size
 
     use_cuda = torch.cuda.is_available()
     if opts.ttype == 'float':
@@ -52,10 +53,12 @@ def _initialize(save_path, reload, set_seed):
 
     dataset = InputDataset(opts)
     data_loader = DataLoader(dataset, batch_size= opts.batch_size, shuffle=True)
-    if not opts.constrained:
-        net = torch_model.Simple_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
-    else:
+    if opts.constrained:
         net = torch_model.Constrained_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
+    elif opts.EI:
+        net = torch_model.EI_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
+    else:
+        net = torch_model.Simple_Model(opts=opts, isize= dataset.X.shape[-1], osize = dataset.Y.shape[-1])
 
     if reload:
         net.load(name='net')
@@ -66,8 +69,8 @@ def _initialize(save_path, reload, set_seed):
     return opts, data_loader, net
 
 
-def train(save_path, reload, set_seed = True):
-    opts, data_loader, net = _initialize(save_path, reload, set_seed)
+def train(modelConfig, reload, set_seed=True):
+    opts, data_loader, net = _initialize(modelConfig, reload, set_seed)
     optimizer = torch.optim.Adam(net.parameters(), lr=1.0 * opts.learning_rate)
 
     n_epoch = opts.epoch
@@ -109,9 +112,10 @@ def train(save_path, reload, set_seed = True):
         pe = opts.print_epoch_interval
         se = opts.save_epoch_interval
         n_iter = opts.n_input // opts.batch_size
-        if ep % pe == 0 and ep != 0:
+        cnt = ep+1
+        if cnt % pe == 0 and ep != 0:
             print('[' + '*' * 50 + ']')
-            print('Epoch {:d}'.format(ep))
+            print('Epoch {:d}'.format(cnt))
             print("Mean loss: {:0.2f}".format(np.mean(logger['loss'][-n_iter:])))
             print("Error loss: {0:.2f}, Weight loss: {1:.2f}, Activity loss: {2:.2f}".format(
                 np.mean(logger['error_loss'][-n_iter:]),
@@ -124,19 +128,18 @@ def train(save_path, reload, set_seed = True):
             print('Time taken {:0.1f}s'.format(total_time))
             print('Examples/second {:.1f}'.format(pe / time_spent))
 
-        if ep % se == 0 and ep != 0:
+        if cnt % se == 0 and ep != 0:
             print("Saving files...")
-            net.save('net', ep)
+            net.save('net', cnt)
             net.save('net')
             with open(os.path.join(opts.save_path, 'loss_log.pkl'), 'wb') as f:
                 pkl.dump(logger, f)
 
-def evaluate(save_path, log):
+def evaluate(modelConfig, log):
     print("Starting testing...")
 
-    opts, data_loader, net = _initialize(save_path, reload=True, set_seed =False)
+    opts, data_loader, net = _initialize(modelConfig, reload=True, set_seed=False, test=True)
     logger = defaultdict(list)
-
 
     for x, y in data_loader:
         hidden = net.initialZeroState()
@@ -151,11 +154,14 @@ def evaluate(save_path, log):
             youts.append(torch2numpy(out))
             hs.append(torch2numpy(hidden))
 
-            logger['x'].append(np.array(xs))
-            logger['y'].append(np.array(ys))
-            logger['y_out'].append(np.array(youts))
-            logger['h'].append(np.array(hs))
+        logger['x'] = np.array(xs)
+        logger['y'] = np.array(ys)
+        logger['y_out'] = np.array(youts)
+        logger['h'] = np.array(hs)
         break
+
+    for k, v in logger.items():
+        logger[k] = np.stack(v, axis=1)
 
     if log:
         #batch, time, neuron
@@ -163,9 +169,9 @@ def evaluate(save_path, log):
             pkl.dump(logger, f)
     return logger
 
-
 if __name__ == "__main__":
     c = config.modelConfig()
-    train(save_path=c.save_path, reload = c.reload, set_seed=True)
-    #
-    # evaluate(save_path=c.save_path, log=True)
+    c.save_path = './_DATA/'
+    c = torch_model.load_config(c.save_path)
+    train(c, reload=c.reload, set_seed=True)
+    evaluate(c, log=True)
